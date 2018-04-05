@@ -10,25 +10,26 @@ import static java.lang.Thread.sleep;
 public class Lobby implements Runnable{
 
     private String name;
+    private Player creator;
     private ArrayList<Player> players;
 
     public Lobby(String name, Player player) {
         players = new ArrayList<>();
         player.setLobby(this);
+        this.creator = player;
         this.players.add(player);
         this.name = name;
     }
 
     public void run() {
-        this.players.get(0).sendOut("Waiting for opponent... skip");
-        while(this.players.size() < 1){
+        this.creator.sendOut("/waiting");
+        while(this.players.size() < 2){
             try{
                 sleep(1000);
-            }catch (InterruptedException e) {
-                e.printStackTrace();
+            }catch (Exception e) {
+                System.out.println(e.getMessage());
             }
         }
-        this.players.get(0).sendOut("Opponent found !");
         new Game(this.players);
     }
 

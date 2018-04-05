@@ -12,6 +12,8 @@ import static java.lang.Thread.sleep;
 public class Client {
 
     private String pseudo;
+    private boolean waiting = false;
+    private String message;
 
     public Client(String host, int port, String pseudo){
 
@@ -25,16 +27,25 @@ public class Client {
             out.println(pseudo);
             in.readLine();
             while (true) {
-                System.out.print("commande : ");
-                String message = clavier.nextLine();//condition ici quand etat skip
+
+                if(!waiting) {
+                    System.out.print("commande : ");
+                    this.message = clavier.nextLine();//condition ici quand etat skip
+                }else if(waiting){
+                    this.message = "waiting";
+                }
                 out.println(message);
                 String reponse = in.readLine();
                 if (reponse.equals("/stop")) {
                     System.out.println("Thread a reçu un stop donc arrêt du thread...");
                     break;
-                }else if (reponse.contains("Wainting")) {
-                    System.out.println(reponse);
-                    out.println("waintin");
+                }else if (reponse.equals("/stopwaiting")) {
+                    this.waiting = false;
+                    System.out.println("Opponent found !");
+                    System.out.println("Game launched");
+                }else if (reponse.equals("/waiting")) {
+                    this.waiting = true;
+                    System.out.println("Waiting...");
                 }else{
                     System.out.println("réponse : " + reponse);
                 }
