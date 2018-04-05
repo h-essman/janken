@@ -1,6 +1,4 @@
-import client.Client;
-import server.Server;
-import gui.*;
+import client.gui.*;
 
 import javax.swing.*;
 

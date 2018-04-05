@@ -1,6 +1,6 @@
-package game;
+package server.game;
 
-import server.Lobby;
+import server.ThreadLobby;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -10,7 +10,7 @@ public class Player {
     private PrintWriter out;
     private BufferedReader in;
     private String pseudo;
-    private Lobby lobby;
+    private ThreadLobby lobby;
     private int id;
 
     public Player(String pseudo, BufferedReader in, PrintWriter out){
@@ -19,7 +19,7 @@ public class Player {
         this.out = out;
     }
 
-    public Player(String pseudo, BufferedReader in, PrintWriter out, Lobby lobby){
+    public Player(String pseudo, BufferedReader in, PrintWriter out, ThreadLobby lobby){
         this.pseudo = pseudo;
         this.in = in;
         this.out = out;
@@ -48,7 +48,7 @@ public class Player {
         return this.id;
     }
 
-    public void setLobby(Lobby lobby){
+    public void setLobby(ThreadLobby lobby){
         this.lobby = lobby;
         this.id = this.lobby.getId();
     }

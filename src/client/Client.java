@@ -30,11 +30,9 @@ public class Client {
 
                 if(!waiting) {
                     System.out.print("commande : ");
-                    this.message = clavier.nextLine();//condition ici quand etat skip
-                }else if(waiting){
-                    this.message = "waiting";
+                    this.message = clavier.nextLine();
+                    out.println(message);
                 }
-                out.println(message);
                 String reponse = in.readLine();
                 if (reponse.equals("/stop")) {
                     System.out.println("Thread a reçu un stop donc arrêt du thread...");

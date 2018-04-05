@@ -1,24 +1,25 @@
 package server;
 
-import game.Game;
-import game.Player;
+import server.game.Game;
+import server.game.Player;
 
 import java.util.ArrayList;
 
 import static java.lang.Thread.sleep;
 
-public class Lobby implements Runnable{
+public class ThreadLobby implements Runnable{
 
     private String name;
     private Player creator;
     private ArrayList<Player> players;
 
-    public Lobby(String name, Player player) {
+    public ThreadLobby(String name, Player player) {
         players = new ArrayList<>();
         player.setLobby(this);
         this.creator = player;
         this.players.add(player);
         this.name = name;
+        System.out.println("Lobby "+this.name+" créé par "+this.creator.getPseudo());
     }
 
     public void run() {
@@ -27,7 +28,7 @@ public class Lobby implements Runnable{
             try{
                 sleep(1000);
             }catch (Exception e) {
-                System.out.println(e.getMessage());
+                System.out.println("ThreadLobby "+e.getMessage());
             }
         }
         new Game(this.players);
@@ -50,5 +51,8 @@ public class Lobby implements Runnable{
             message += "Joueur "+player.getId()+" "+player.getPseudo();
         }
         return message;
+    }
+    public ArrayList<Player> getArrayPlayers() {
+        return this.players;
     }
 }

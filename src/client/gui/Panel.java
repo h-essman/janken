@@ -1,4 +1,4 @@
-package gui;
+package client.gui;
 
 import client.Client;
 import server.Server;
@@ -11,8 +11,6 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.Inet4Address;
-import java.util.ArrayList;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import static java.lang.Integer.parseInt;
