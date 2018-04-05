@@ -79,4 +79,7 @@ public class Server {
             e.printStackTrace();
         }
     }
+    public void close(ThreadClient lobby){
+        //killer tout proprement
+    }
 }
