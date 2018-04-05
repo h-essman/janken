@@ -1,6 +1,8 @@
 package server;
 
 import server.game.Player;
+
+import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
 
@@ -65,5 +67,16 @@ public class Server {
     }
     public int getClient() {
         return this.nbClient;
+    }
+    public void close(Socket socket, Player player){
+        System.out.println("Le thread s'arrête...");
+        this.removeClient();
+        this.players.remove(player);
+        player.closeOut();
+        try {
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -42,7 +42,7 @@ public class ThreadClient implements Runnable {
                 if(ordre.contains("/stop")){
                     System.out.println("Instruction STOP reçue");
                     out.println("/stop");
-                    close();
+                    this.server.close(this.socket, this.player);
                 }else if(ordre.contains("/server")){
                     out.println("Il y a "+ this.server.getClient()+" client(s) connecté(s)");
                 }else if(ordre.contains("/lobbies")){
@@ -66,16 +66,6 @@ public class ThreadClient implements Runnable {
 
         } catch (IOException e) {
             System.out.println("Problème : "+e.getMessage());
-        }
-    }
-
-    public void close(){
-        System.out.println("Le thread s'arrête...");
-        this.server.removeClient();
-        try {
-            this.socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }

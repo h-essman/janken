@@ -52,4 +52,7 @@ public class Player {
         this.lobby = lobby;
         this.id = this.lobby.getId();
     }
+    public void closeOut(){
+        this.out.close();
+    }
 }
