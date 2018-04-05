@@ -14,6 +14,7 @@ public class Client {
     private String pseudo;
     private boolean waiting = false;
     private String message;
+    private PrintWriter out;
 
     public Client(String host, int port, String pseudo){
 
@@ -22,6 +23,7 @@ public class Client {
 
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            this.out = out;
 
             Scanner clavier = new Scanner(System.in);
             out.println(pseudo);
@@ -61,5 +63,9 @@ public class Client {
     }
     public void setPseudo(String pseudo) {
         this.pseudo=pseudo;
+    }
+
+    public void sendOut(String message) {
+        this.out.println(message);
     }
 }

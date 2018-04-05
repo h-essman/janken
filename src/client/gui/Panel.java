@@ -17,7 +17,8 @@ import static java.lang.Integer.parseInt;
 
 public class Panel extends JPanel implements ActionListener {
 
-    private JButton btnClient, btnServer, btnSolo, btnInfo, btnQuit;
+    private Client client;
+    private JButton btnClient, btnServer, btnConfirm, btnInfo, btnQuit;
     private JTextField inputHost, inputPseudo, inputPort;
     private JLabel labelHost, labelPseudo, labelPort, labelPic;
     private String hostname, ipadress;
@@ -34,10 +35,10 @@ public class Panel extends JPanel implements ActionListener {
 
         this.setLayout(null);
 
-        BufferedImage myPicture = ImageIO.read(new File("D:\\javaproject\\clientserveur\\src\\image.png"));
+        /*BufferedImage myPicture = ImageIO.read(new File(".\\image.png"));
         this.labelPic= new JLabel(new ImageIcon(myPicture.getScaledInstance(100, 100, Image.SCALE_SMOOTH)));
         labelPic.setBounds(400,20,100,100);
-        this.add(labelPic);
+        this.add(labelPic);*/
 
         this.labelPseudo = new JLabel("Pseudo : ");
         this.labelPseudo.setBounds(20,20,150,30);
@@ -66,24 +67,24 @@ public class Panel extends JPanel implements ActionListener {
         this.inputPort.setBounds(170,100,200,30);
         this.add(inputPort);
 
-        this.btnSolo = new JButton("Partie en solo");
-        this.btnSolo.setBounds(180,150,160,20);
-        this.add(btnSolo);
-        this.btnSolo.addActionListener(this);
+        this.btnConfirm = new JButton("Confirmer");
+        this.btnConfirm.setBounds(180,150,160,20);
+        this.add(btnConfirm);
+        this.btnConfirm.addActionListener(this);
 
         this.btnServer = new JButton("Créer un serveur");
         this.btnServer.setBounds(350,150,160,20);
-        this.add(btnServer);
+        //this.add(btnServer);
         this.btnServer.addActionListener(this);
 
         this.btnClient = new JButton("Rejoindre un serveur");
         this.btnClient.setBounds(10,150,160,20);
-        this.add(btnClient);
+        //this.add(btnClient);
         this.btnClient.addActionListener(this);
 
         this.btnInfo = new JButton("Information");
         this.btnInfo.setBounds(10,200,130,20);
-        this.add(btnInfo);
+        //this.add(btnInfo);
         this.btnInfo.addActionListener(this);
 
         this.btnQuit = new JButton("Quitter");
@@ -111,8 +112,13 @@ public class Panel extends JPanel implements ActionListener {
             }else {
                 new Client(inputHost.getText(), Integer.parseInt(inputPort.getText()), inputPseudo.getText());
             }
-        }else if (e.getSource() == this.btnSolo) {
-            System.out.println("Partie SOLO");
+        }else if (e.getSource() == this.btnConfirm) {
+            System.out.println("Création nouveau client");
+            client = new Client(this.inputHost.getText(),Integer.parseInt(this.inputPort.getText()), this.inputPseudo.getText());
+            this.add(btnServer);
+            this.add(btnClient);
+            this.add(btnInfo);
+            this.remove(btnConfirm);
         }else if (e.getSource() == this.btnInfo) {
             JOptionPane.showMessageDialog(this,
                     "Votre adresse IP : "+this.ipadress +
