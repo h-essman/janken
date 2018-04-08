@@ -23,7 +23,7 @@ public class Panel extends JPanel implements ActionListener {
     private JLabel labelHost, labelPseudo, labelPort, labelPic;
     private String hostname, ipadress;
 
-    public Panel() throws IOException {
+    public Panel(Client client) throws IOException {
 
         try{
             InetAddress inetadr = InetAddress.getLocalHost();
@@ -110,7 +110,7 @@ public class Panel extends JPanel implements ActionListener {
                         "Des champs sont vides..."
                 );
             }else {
-                new Client(inputHost.getText(), Integer.parseInt(inputPort.getText()), inputPseudo.getText());
+                this.client.connexion(inputHost.getText(), Integer.parseInt(inputPort.getText()));
             }
         }else if (e.getSource() == this.btnConfirm) {
             System.out.println("Création nouveau client");

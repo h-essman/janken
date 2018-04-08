@@ -23,7 +23,7 @@ public class Server {
                 Socket socket = server.accept();
                 System.out.println("Nouveau client est connecté !");
                 addClient();
-                new Thread(new ThreadClient(socket,this)).start();
+                new Thread(new ThreadServer(socket,this)).start();
             }
         }
         catch (Exception e)
@@ -79,7 +79,7 @@ public class Server {
             e.printStackTrace();
         }
     }
-    public void close(ThreadClient lobby){
+    public void close(ThreadServer lobby){
         //killer tout proprement
     }
 }

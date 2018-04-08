@@ -8,13 +8,13 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class ThreadClient implements Runnable {
+public class ThreadServer implements Runnable {
 
     private Socket socket;
     private Server server;
     private Player player;
 
-    public ThreadClient(Socket socket, Server server){
+    public ThreadServer(Socket socket, Server server){
         this.socket = socket;
         this.server = server;
     }
