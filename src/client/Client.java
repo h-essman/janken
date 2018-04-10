@@ -1,24 +1,17 @@
 package client;
-import client.gui.Frame;
-
-import javax.swing.*;
 
 public class Client {
 
-    private String pseudo;
-    private Frame frame;
-    private Thread thread;
+    private String pseudo, state, commande;
+    private int id;
 
     public Client(){
-        this.frame = new Frame(this);
-        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.frame.setVisible(true);
+
     }
 
-    public boolean connexion(String host, int port){
+    public boolean connexion(String host, int port, String pseudo){
         try{
-            this.thread = new Thread(new ThreadCient(host,port,this));
-            this.thread.start();
+            new Thread(new ThreadCient(host,port,this)).start();
             return true;
         }catch (Exception e){
             System.out.println(e.getMessage());
@@ -31,4 +24,28 @@ public class Client {
         return this.pseudo;
     }
     public void setPseudo(String pseudo){ this.pseudo=pseudo; }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getCommande() {
+        return commande;
+    }
+
+    public void setCommande(String commande) {
+        this.commande = commande;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }

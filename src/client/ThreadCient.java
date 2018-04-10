@@ -1,5 +1,9 @@
 package client;
 import org.json.*;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,17 +15,19 @@ import java.util.stream.Collectors;
 
 public class ThreadCient implements Runnable{
 
-    private JSONArray json;
+    private JSONObject json;
     private PrintWriter out;
     private BufferedReader in;
     private String reception;
     private Client client;
+    private JSONParser parser;
 
     public ThreadCient(String host, int port, Client client) throws IOException {
         Socket socket = new Socket(host, port);
         this.client = client;
         this.out = new PrintWriter(socket.getOutputStream(), true);
         this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        this.parser = new JSONParser();
     }
     public void run() {
         try {
@@ -29,9 +35,8 @@ public class ThreadCient implements Runnable{
                 if(this.in.ready()){
                     this.execution(reception);
                     this.out.println(this.json.toString());
-                    this.reception = "";
                 }else{
-                    this.reception += this.in.readLine();
+                    this.reception = this.in.readLine();
                 }
             }
         } catch (IOException e) {
@@ -39,15 +44,26 @@ public class ThreadCient implements Runnable{
         }
 
     }
+
     private boolean execution(String reception){
-        if(true){
+        try {
+            JSONObject receptionJSON = new JSONObject();
+            receptionJSON = (JSONObject) this.parser.parse(reception);
+
+
             return true;
-        }else {
-            return false;
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
-    }
-    public JSONArray getJson() {
-        return json;
+        return false;
     }
 
+    public JSONObject formJSON(String commande){
+        JSONObject client=new JSONObject();
+        client.put("pseudo", this.client.getPseudo());
+        client.put("id", this.client.getId());
+        client.put("state", this.client.getState());
+        client.put("command", this.client.getCommande());
+        return client;
+    }
 }

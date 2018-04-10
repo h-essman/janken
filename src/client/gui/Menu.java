@@ -15,15 +15,19 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import static java.lang.Integer.parseInt;
 
-public class Panel extends JPanel implements ActionListener {
+public class Menu extends JPanel implements ActionListener {
 
     private Client client;
-    private JButton btnClient, btnServer, btnConfirm, btnInfo, btnQuit;
+    private Frame frame;
+    private JButton btnConnexion, btnQuit;
     private JTextField inputHost, inputPseudo, inputPort;
     private JLabel labelHost, labelPseudo, labelPort, labelPic;
     private String hostname, ipadress;
 
-    public Panel(Client client) throws IOException {
+    public Menu(Client client, Frame frame){
+
+        this.client = client;
+        this.frame = frame;
 
         try{
             InetAddress inetadr = InetAddress.getLocalHost();
@@ -44,11 +48,11 @@ public class Panel extends JPanel implements ActionListener {
         this.labelPseudo.setBounds(20,20,150,30);
         this.add(labelPseudo);
 
-        this.labelHost = new JLabel("Adresse de l'hôte : ");
+        this.labelHost = new JLabel("Adresse du serveur : ");
         this.labelHost .setBounds(20,60,150,30);
         this.add(labelHost);
 
-        this.labelPort= new JLabel("Port de l'hôte : ");
+        this.labelPort= new JLabel("Port du serveur : ");
         this.labelPort.setBounds(20,100,150,30);
         this.add(labelPort);
 
@@ -67,28 +71,13 @@ public class Panel extends JPanel implements ActionListener {
         this.inputPort.setBounds(170,100,200,30);
         this.add(inputPort);
 
-        this.btnConfirm = new JButton("Confirmer");
-        this.btnConfirm.setBounds(180,150,160,20);
-        this.add(btnConfirm);
-        this.btnConfirm.addActionListener(this);
-
-        this.btnServer = new JButton("Créer un serveur");
-        this.btnServer.setBounds(350,150,160,20);
-        //this.add(btnServer);
-        this.btnServer.addActionListener(this);
-
-        this.btnClient = new JButton("Rejoindre un serveur");
-        this.btnClient.setBounds(10,150,160,20);
-        //this.add(btnClient);
-        this.btnClient.addActionListener(this);
-
-        this.btnInfo = new JButton("Information");
-        this.btnInfo.setBounds(10,200,130,20);
-        //this.add(btnInfo);
-        this.btnInfo.addActionListener(this);
+        this.btnConnexion = new JButton("Connexion");
+        this.btnConnexion.setBounds(10,150,200,40);
+        this.add(btnConnexion);
+        this.btnConnexion.addActionListener(this);
 
         this.btnQuit = new JButton("Quitter");
-        this.btnQuit.setBounds(410,200,100,20);
+        this.btnQuit.setBounds(220,150,200,40);
         this.add(btnQuit);
         this.btnQuit.addActionListener(this);
     }
@@ -96,35 +85,21 @@ public class Panel extends JPanel implements ActionListener {
 
         if (e.getSource() == this.btnQuit) {
             System.exit(0);
-        } else if (e.getSource() == this.btnServer) {
-            if (inputPseudo.getText().length() == 0 | inputPort.getText().length() == 0) {
-                JOptionPane.showMessageDialog(this,
-                        "Des champs sont vides..."
-                );
-            }else {
-                new Server(Integer.parseInt(inputPort.getText()));
-            }
-        }else if (e.getSource() == this.btnClient) {
+        }else if (e.getSource() == this.btnConnexion) {
             if (inputHost.getText().length() == 0 | inputPseudo.getText().length() == 0 | inputPort.getText().length() == 0) {
                 JOptionPane.showMessageDialog(this,
                         "Des champs sont vides..."
                 );
-            }else {
-                this.client.connexion(inputHost.getText(), Integer.parseInt(inputPort.getText()));
+            } else {
+                if (this.client.connexion(inputHost.getText(), Integer.parseInt(inputPort.getText()), inputPseudo.getText())) {
+                    this.frame.goNext("server");
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                            "Erreur de connexion..."
+                    );
+                    this.resetField();
+                }
             }
-        }else if (e.getSource() == this.btnConfirm) {
-            System.out.println("Création nouveau client");
-            client = new Client(this.inputHost.getText(),Integer.parseInt(this.inputPort.getText()), this.inputPseudo.getText());
-            this.add(btnServer);
-            this.add(btnClient);
-            this.add(btnInfo);
-            this.remove(btnConfirm);
-        }else if (e.getSource() == this.btnInfo) {
-            JOptionPane.showMessageDialog(this,
-                    "Votre adresse IP : "+this.ipadress +
-                    "\n"+"Votre nom d'hôte : "+ this.hostname+"" +
-                    "\n"+"Votre pseudo :"+inputPseudo.getText()
-            );
         }
     }
     public void resetField(){
