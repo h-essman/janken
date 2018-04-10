@@ -1,5 +1,6 @@
 package server;
 
+import org.json.JSONObject;
 import server.game.Player;
 
 import java.io.BufferedReader;
@@ -8,64 +9,84 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import static java.lang.Thread.sleep;
+
 public class ThreadServer implements Runnable {
 
     private Socket socket;
     private Server server;
     private Player player;
+    private JSONObject jsonServer;
+    private JSONObject jsonClient;
+    private String reception;
+    private PrintWriter out;
+    private BufferedReader in;
+    private String status = "reception";
 
     public ThreadServer(Socket socket, Server server){
         this.socket = socket;
         this.server = server;
+        this.player = new Player(this);
+        try {
+            this.out = new PrintWriter(this.socket.getOutputStream(), true);
+            this.in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+        }
+        catch(IOException e){
+            System.out.println(e.getMessage());
+        }
+        this.jsonServer = new JSONObject();
+        this.jsonClient = new JSONObject();
     }
 
     public void run() {
 
-        try {
-            //On initialise le in et out
-            PrintWriter out = new PrintWriter(this.socket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
-
-            //On attend le pseudo du client
-            String pseudo = in.readLine();
-
-            //On crée le joueur sur le serveur
-            this.player = new Player(pseudo,in,out);
-            out.println("/ready");
-
-            //Choix du client
-            while(true){
-
-                //On attend l'ordre
-                String ordre = in.readLine();
-
-                if(ordre.contains("/stop")){
-                    System.out.println("Instruction STOP reçue");
-                    out.println("/stop");
-                    this.server.close(this.socket, this.player);
-                }else if(ordre.contains("/server")){
-                    out.println("Il y a "+ this.server.getClient()+" client(s) connecté(s)");
-                }else if(ordre.contains("/lobbies")){
-                    out.println(this.server.getLobbies());
-                }else if(ordre.contains("/join")){
-                    out.println("Name ?");
-                    String name = in.readLine();
-                    if(this.server.joinLobby(name,this.player)) {
-                        break;
+        while (true) {
+            System.out.println(this.jsonServer.toString() + "\n" + this.reception);
+            try {
+                sleep(500);
+                if (this.status.equals("emission")) {
+                    int compteur = 0;
+                    while(!this.execution(this.reception)){
+                        sleep(2000);
+                        compteur ++;
+                        System.out.println("Try " + compteur);
                     }
-                }else if(ordre.contains("/create")){
-                    out.println("Name ?");
-                    String name = in.readLine();
-                    this.server.createLobby(name,this.player);
-                    break;
-                }else{
-                    out.println("Ordre non reconnu : "+ordre);
+                    this.out.println(jsonServer.toString());
+                    this.status = "reception";
+                } else {
+                    this.reception = this.in.readLine();
+                    this.status = "emission";
                 }
-                System.out.println("Thread reçoit : " + ordre);
+            }catch(IOException e){
+                System.out.println("Erreur IO run ThreadServer : "+e.getMessage());
+                this.server.removeClient();
+                break;
+            }catch (InterruptedException e){
+                System.out.println("Erreur SLEEP run ThreadServer : "+e.getMessage());
+                break;
             }
-
-        } catch (IOException e) {
-            System.out.println("Problème : "+e.getMessage());
         }
+    }
+    public boolean execution(String reception){
+        try {
+            this.jsonClient = new JSONObject(reception);
+
+
+            //ICI
+
+
+
+            this.jsonServer = formJSON();
+            return true;
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+    public JSONObject formJSON(){
+        JSONObject client=new JSONObject();
+        client.put("server", this.server.getName());
+        client.put("nbClient", this.server.getClient());
+        return client;
     }
 }

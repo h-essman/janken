@@ -1,28 +1,39 @@
 package client;
 
+import client.gui.Frame;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
 public class Client {
 
     private String pseudo, state, commande;
+    private JSONObject jsonServer;
     private int id;
+    private Frame frame;
 
-    public Client(){
-
+    public Client(Frame frame){
+        this.frame = frame;
     }
 
     public boolean connexion(String host, int port, String pseudo){
-        try{
-            new Thread(new ThreadCient(host,port,this)).start();
-            return true;
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-            return false;
+
+        try {
+            new Thread(new ThreadCient(host,port,this, this.frame)).start();
+            this.pseudo = pseudo;
+            this.commande = "rien";
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return true;
+
     }
     
 
     public String getPseudo() {
         return this.pseudo;
     }
+
     public void setPseudo(String pseudo){ this.pseudo=pseudo; }
 
     public String getState() {
@@ -47,5 +58,13 @@ public class Client {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public void setJsonServer(JSONObject jsonServer) {
+        this.jsonServer = jsonServer;
+    }
+
+    public JSONObject getJsonServer() {
+        return this.jsonServer;
     }
 }

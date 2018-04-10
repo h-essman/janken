@@ -15,10 +15,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import static java.lang.Integer.parseInt;
 
-public class Menu extends JPanel implements ActionListener {
+public class Menu extends Panel implements ActionListener {
 
-    private Client client;
-    private Frame frame;
+
     private JButton btnConnexion, btnQuit;
     private JTextField inputHost, inputPseudo, inputPort;
     private JLabel labelHost, labelPseudo, labelPort, labelPic;
@@ -26,8 +25,7 @@ public class Menu extends JPanel implements ActionListener {
 
     public Menu(Client client, Frame frame){
 
-        this.client = client;
-        this.frame = frame;
+       super(client,frame);
 
         try{
             InetAddress inetadr = InetAddress.getLocalHost();
@@ -81,6 +79,12 @@ public class Menu extends JPanel implements ActionListener {
         this.add(btnQuit);
         this.btnQuit.addActionListener(this);
     }
+
+    @Override
+    public void actualiser() {
+        System.out.println("J'actualise le menu");
+    }
+
     public void actionPerformed(ActionEvent e){
 
         if (e.getSource() == this.btnQuit) {
@@ -91,13 +95,12 @@ public class Menu extends JPanel implements ActionListener {
                         "Des champs sont vides..."
                 );
             } else {
-                if (this.client.connexion(inputHost.getText(), Integer.parseInt(inputPort.getText()), inputPseudo.getText())) {
-                    this.frame.goNext("server");
+                if (this.getClient().connexion(inputHost.getText(), Integer.parseInt(inputPort.getText()), inputPseudo.getText())) {
+                    this.getFrame().goNext("server");
                 } else {
                     JOptionPane.showMessageDialog(this,
                             "Erreur de connexion..."
                     );
-                    this.resetField();
                 }
             }
         }

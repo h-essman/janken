@@ -1,58 +1,38 @@
 package server.game;
 
-import server.ThreadLobby;
+//import server.ThreadLobby;
+import server.ThreadServer;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
 public class Player {
 
-    private PrintWriter out;
-    private BufferedReader in;
     private String pseudo;
-    private ThreadLobby lobby;
+    //private ThreadLobby lobby;
+    private ThreadServer threadServer;
     private int id;
 
-    public Player(String pseudo, BufferedReader in, PrintWriter out){
+    public Player(ThreadServer threadServer){
+        this.threadServer = threadServer;
+    }
+/*
+    public Player(ThreadServer threadServer, String pseudo, ThreadLobby lobby){
+        this.threadServer = threadServer;
         this.pseudo = pseudo;
-        this.in = in;
-        this.out = out;
+        //this.lobby = lobby;
     }
-
-    public Player(String pseudo, BufferedReader in, PrintWriter out, ThreadLobby lobby){
-        this.pseudo = pseudo;
-        this.in = in;
-        this.out = out;
-        this.lobby = lobby;
-        this.id = this.lobby.getId();
-    }
-
-    public void sendOut(String message) {
-        this.out.println(message);
-    }
-
-    public String getIn() {
-        try {
-            return this.in.readLine();
-        }catch (IOException e){
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
+*/
     public String getPseudo() {
         return this.pseudo;
     }
-
-    public int getId() {
-        return this.id;
+    public void setPseudo(String pseudo) {
+        this.pseudo = pseudo;
     }
 
-    public void setLobby(ThreadLobby lobby){
-        this.lobby = lobby;
-        this.id = this.lobby.getId();
-    }
-    public void closeOut(){
-        this.out.close();
-    }
+   // public void setLobby(ThreadLobby lobby){
+        //this.lobby = lobby;
+        //this.id = this.lobby.getId();
+    //}
 }

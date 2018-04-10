@@ -1,64 +1,89 @@
 package client;
+import client.gui.Frame;
 import org.json.*;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
+
+import static java.lang.Thread.sleep;
 
 public class ThreadCient implements Runnable{
 
-    private JSONObject json;
+    private JSONObject jsonClient;
+    private JSONObject jsonServer;
     private PrintWriter out;
     private BufferedReader in;
     private String reception;
     private Client client;
-    private JSONParser parser;
+    private Frame frame;
+    private String status = "reception";
 
-    public ThreadCient(String host, int port, Client client) throws IOException {
-        Socket socket = new Socket(host, port);
+    public ThreadCient(String host, int port, Client client, Frame frame) {
+        this.frame = frame;
         this.client = client;
-        this.out = new PrintWriter(socket.getOutputStream(), true);
-        this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        this.parser = new JSONParser();
+        try {
+            Socket socket = new Socket(host, port);
+            this.out = new PrintWriter(socket.getOutputStream(), true);
+            this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+        this.jsonClient = new JSONObject();
+        this.jsonServer = new JSONObject();
+
+        this.jsonClient = formJSON();
+        this.out.println(jsonClient.toString());
     }
     public void run() {
-        try {
-            while(true){
-                if(this.in.ready()){
-                    this.execution(reception);
-                    this.out.println(this.json.toString());
-                }else{
+        while (true) {
+            System.out.println(this.jsonClient.toString() + "\n" + this.reception);
+            try {
+                sleep(500);
+                if (this.status.equals("emission")) {
+                    int compteur = 0;
+                    while(!this.execution(this.reception)){
+                        sleep(2000);
+                        compteur ++;
+                        System.out.println("Try " + compteur);
+                    }
+                    this.status = "reception";
+                    this.out.println(this.jsonClient.toString());
+                } else {
                     this.reception = this.in.readLine();
+                    this.status = "emission";
                 }
+            } catch (InterruptedException e) {
+                System.out.println("Problème run ThreadClient : " + e.getMessage());
+                break;
+            } catch (IOException e){
+                System.out.println("Problème run ThreadClient : " + e.getMessage());
+                break;
             }
-        } catch (IOException e) {
-            System.out.println("Error ThreadClient : "+e.getMessage());
         }
-
     }
 
-    private boolean execution(String reception){
+    public boolean execution(String reception){
         try {
-            JSONObject receptionJSON = new JSONObject();
-            receptionJSON = (JSONObject) this.parser.parse(reception);
+            this.jsonServer = new JSONObject(reception);
+            this.client.setJsonServer(this.jsonServer);
+            this.frame.getPanel().actualiser();
 
 
+            //ICI
+
+
+            this.jsonClient = formJSON();
             return true;
-        } catch (ParseException e) {
-            e.printStackTrace();
+        }catch (Exception e){
+            System.out.println("Client : " + e.getMessage());
+            return false;
         }
-        return false;
     }
 
-    public JSONObject formJSON(String commande){
+    public JSONObject formJSON(){
         JSONObject client=new JSONObject();
         client.put("pseudo", this.client.getPseudo());
         client.put("id", this.client.getId());

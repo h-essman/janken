@@ -7,13 +7,13 @@ import java.net.*;
 import java.util.ArrayList;
 
 public class Server {
-
+    private String name = "hesserver";
     private ArrayList<Player> players;
-    private ArrayList<ThreadLobby> lobbies;
+    //private ArrayList<ThreadLobby> lobbies;
     private int nbClient = 0;
 
     public Server(int port) {
-        this.lobbies = new ArrayList<>();
+        //this.lobbies = new ArrayList<>();
         this.players = new ArrayList<>();
 
         try {
@@ -22,8 +22,8 @@ public class Server {
             while(true) {
                 Socket socket = server.accept();
                 System.out.println("Nouveau client est connecté !");
-                addClient();
                 new Thread(new ThreadServer(socket,this)).start();
+                addClient();
             }
         }
         catch (Exception e)
@@ -31,7 +31,7 @@ public class Server {
             System.out.println("Problème : "+e.getMessage());
         }
     }
-    public boolean joinLobby(String name, Player player){
+    /*public boolean joinLobby(String name, Player player){
         for(ThreadLobby lobby:lobbies){
             if(lobby.getName().equals(name)){
                 if(lobby.getArrayPlayers().size() < 2) {
@@ -59,6 +59,7 @@ public class Server {
         }
         return message;
     }
+    */
     public void addClient() {
         this.nbClient++;
     }
@@ -67,7 +68,7 @@ public class Server {
     }
     public int getClient() {
         return this.nbClient;
-    }
+    }/*
     public void close(Socket socket, Player player){
         System.out.println("Le thread s'arrête...");
         this.removeClient();
@@ -81,5 +82,9 @@ public class Server {
     }
     public void close(ThreadServer lobby){
         //killer tout proprement
+    }*/
+
+    public String getName() {
+        return name;
     }
 }
