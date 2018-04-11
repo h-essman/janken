@@ -31,7 +31,7 @@ public class ThreadServer implements Runnable {
 
         this.player = new Player(this);
         this.server.giveIdClient(this.player);
-        System.out.println(this.server.addClient(this.player));
+        System.out.println(this.server.addClient(player));
 
         try {
             this.out = new PrintWriter(this.socket.getOutputStream(), true);
@@ -81,7 +81,6 @@ public class ThreadServer implements Runnable {
         try {
             this.jsonClient = new JSONObject(reception);
             this.player.setPseudo(this.jsonClient.getString("pseudo"));
-
             if(this.jsonClient.getString("command").equals("create")){
                 System.out.println(this.server.createLobby(this.jsonClient.getString("argumentString"),this.player));
             }

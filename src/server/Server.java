@@ -95,14 +95,10 @@ public class Server {
         return this.lastIdlobby;
     }
 
-    public ArrayList<Lobby> getArrayLobbies(){ return this.lobbies; }
-
-    public ArrayList<Player> getArrayPlayers(){ return this.players; }
-
     public String addClient(Player player) {
         this.players.add(player);
         this.nbClient++;
-        return "Ajout de "+player.getPseudo()+" "+player.getId();
+        return "Ajout du joueur ID "+player.getId();
     }
 
     public String removeClient(Player player){
@@ -115,6 +111,11 @@ public class Server {
     public int getClient() { return this.nbClient; }
 
     public String getName() { return name; }
+
+    public ArrayList<Lobby> getArrayLobbies(){ return this.lobbies; }
+
+    public ArrayList<Player> getArrayPlayers(){ return this.players; }
+
 
 
      /*
