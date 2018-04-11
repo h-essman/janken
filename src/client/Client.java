@@ -3,13 +3,11 @@ package client;
 import client.gui.Frame;
 import org.json.JSONObject;
 
-import java.io.IOException;
-
 public class Client {
 
-    private String pseudo, state, commande;
+    private String pseudo, state, command, argumentString;
     private JSONObject jsonServer;
-    private int id;
+    private int id, argumentInt;
     private Frame frame;
 
     public Client(Frame frame){
@@ -19,16 +17,17 @@ public class Client {
     public boolean connexion(String host, int port, String pseudo){
 
         try {
-            new Thread(new ThreadCient(host,port,this, this.frame)).start();
             this.pseudo = pseudo;
-            this.commande = "rien";
+            this.command = "";
+
+            new Thread(new ThreadCient(host,port,this, this.frame)).start();
+
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
-        return true;
-
     }
-    
 
     public String getPseudo() {
         return this.pseudo;
@@ -44,12 +43,12 @@ public class Client {
         this.state = state;
     }
 
-    public String getCommande() {
-        return commande;
+    public String getCommand() {
+        return command;
     }
 
-    public void setCommande(String commande) {
-        this.commande = commande;
+    public void setCommand(String commande) {
+        this.command = commande;
     }
 
     public int getId() {
@@ -67,4 +66,12 @@ public class Client {
     public JSONObject getJsonServer() {
         return this.jsonServer;
     }
+
+    public String getArgumentString() { return argumentString; }
+
+    public void setArgumentString(String argument) { this.argumentString = argument; }
+
+    public int getArgumentInt() { return argumentInt; }
+
+    public void setArgumentInt(int argumentInt) { this.argumentInt = argumentInt; }
 }

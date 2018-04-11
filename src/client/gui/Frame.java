@@ -22,6 +22,7 @@ public class Frame extends JFrame {
         this.setLocationRelativeTo(null);
 
         this.client = new Client(this);
+
         this.menu = new Menu(client, this);
         this.server = new Server(client, this);
         this.lobby = new Lobby(client, this);
@@ -48,7 +49,7 @@ public class Frame extends JFrame {
                 break;
             case "server":
                 this.setTitle("Janken - SERVER");
-                this.setSize(440, 400);
+                this.setSize(440, 350);
                 this.cardLayout.show(this.panel, "server");
                 this.client.setState("server");
 

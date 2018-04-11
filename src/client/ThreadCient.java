@@ -2,6 +2,7 @@ package client;
 import client.gui.Frame;
 import org.json.*;
 
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -24,6 +25,8 @@ public class ThreadCient implements Runnable{
     public ThreadCient(String host, int port, Client client, Frame frame) {
         this.frame = frame;
         this.client = client;
+        this.jsonClient = new JSONObject();
+        this.jsonServer = new JSONObject();
         try {
             Socket socket = new Socket(host, port);
             this.out = new PrintWriter(socket.getOutputStream(), true);
@@ -31,9 +34,6 @@ public class ThreadCient implements Runnable{
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
-        this.jsonClient = new JSONObject();
-        this.jsonServer = new JSONObject();
-
         this.jsonClient = formJSON();
         this.out.println(jsonClient.toString());
     }
@@ -70,15 +70,19 @@ public class ThreadCient implements Runnable{
             this.jsonServer = new JSONObject(reception);
             this.client.setJsonServer(this.jsonServer);
             this.frame.getPanel().actualiser();
+            this.client.setId(this.jsonServer.getInt("id"));
 
 
             //ICI
 
 
             this.jsonClient = formJSON();
+            this.client.setCommand("");
+            this.client.setArgumentString("");
+            this.client.setArgumentInt(0);
             return true;
         }catch (Exception e){
-            System.out.println("Client : " + e.getMessage());
+            System.out.println("Client : " + e.getMessage()); // PROBLEME
             return false;
         }
     }
@@ -88,7 +92,9 @@ public class ThreadCient implements Runnable{
         client.put("pseudo", this.client.getPseudo());
         client.put("id", this.client.getId());
         client.put("state", this.client.getState());
-        client.put("command", this.client.getCommande());
+        client.put("command", this.client.getCommand());
+        client.put("argumentString", this.client.getArgumentString());
+        client.put("argumentInt", this.client.getArgumentInt());
         return client;
     }
 }

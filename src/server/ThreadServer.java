@@ -22,11 +22,16 @@ public class ThreadServer implements Runnable {
     private PrintWriter out;
     private BufferedReader in;
     private String status = "reception";
+    private String command = "";
+    private String argument = "";
 
     public ThreadServer(Socket socket, Server server){
         this.socket = socket;
         this.server = server;
+
         this.player = new Player(this);
+        this.server.giveIdClient(this.player);
+
         try {
             this.out = new PrintWriter(this.socket.getOutputStream(), true);
             this.in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
@@ -34,6 +39,7 @@ public class ThreadServer implements Runnable {
         catch(IOException e){
             System.out.println(e.getMessage());
         }
+
         this.jsonServer = new JSONObject();
         this.jsonClient = new JSONObject();
     }
@@ -60,6 +66,9 @@ public class ThreadServer implements Runnable {
             }catch(IOException e){
                 System.out.println("Erreur IO run ThreadServer : "+e.getMessage());
                 this.server.removeClient();
+                if(player.getStatus().equals("creator")) {
+                    this.server.removeLobby(this.player.getLobby());
+                }
                 break;
             }catch (InterruptedException e){
                 System.out.println("Erreur SLEEP run ThreadServer : "+e.getMessage());
@@ -70,23 +79,43 @@ public class ThreadServer implements Runnable {
     public boolean execution(String reception){
         try {
             this.jsonClient = new JSONObject(reception);
+            this.player.setPseudo(this.jsonClient.getString("pseudo"));
 
+            if(this.jsonClient.getString("command").equals("create")){
+                this.server.createLobby(this.jsonClient.getString("argumentString"),this.player);
+            }
+            if(this.jsonClient.getString("command").equals("join")){
+                this.server.joinLobby(this.jsonClient.getInt("argumentInt"),this.player);
+            }
 
             //ICI
 
-
-
             this.jsonServer = formJSON();
+            this.command = "";
+            this.argument = "";
             return true;
         }catch (Exception e){
-            System.out.println(e.getMessage());
+            System.out.println(this.server.getArrayLobbies().toString());
             return false;
         }
     }
     public JSONObject formJSON(){
         JSONObject client=new JSONObject();
         client.put("server", this.server.getName());
-        client.put("nbClient", this.server.getClient());
+        client.put("clients", this.server.getClient());
+        client.put("id", this.player.getId());
+        client.put("command", this.getCommand());
+        client.put("lobbies", this.server.getLobbies());
         return client;
     }
+
+    public String getCommand() { return command; }
+
+    public void setCommand(String command) { this.command = command; }
+
+    public String getArgument() { return argument; }
+
+    public void setArgument(String argument) { this.argument = argument; }
+
+    public Server getServer() { return server; }
 }

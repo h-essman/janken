@@ -1,19 +1,22 @@
 package server;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import server.game.Player;
 
-import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
 
 public class Server {
     private String name = "hesserver";
     private ArrayList<Player> players;
-    //private ArrayList<ThreadLobby> lobbies;
+    private ArrayList<Lobby> lobbies;
     private int nbClient = 0;
+    private int lastIdClient = 0;
+    private int lastIdlobby = 0;
 
     public Server(int port) {
-        //this.lobbies = new ArrayList<>();
+        this.lobbies = new ArrayList<>();
         this.players = new ArrayList<>();
 
         try {
@@ -31,44 +34,77 @@ public class Server {
             System.out.println("Problème : "+e.getMessage());
         }
     }
-    /*public boolean joinLobby(String name, Player player){
-        for(ThreadLobby lobby:lobbies){
-            if(lobby.getName().equals(name)){
-                if(lobby.getArrayPlayers().size() < 2) {
-                    player.setLobby(lobby);
-                    lobby.joinLobby(player);
-                    System.out.println(player.getPseudo()+" a rejoint le lobby "+ lobby.getName()+".");
-                    return true;
-                }else{
-                    player.sendOut("Erreur");
-                    return false;
-                }
+
+    public void createLobby(String name, Player player){
+        Lobby lobby = new Lobby(name, player, this);
+        player.setStatus("creator");
+        player.setLobby(lobby);
+        giveIdLobby(lobby);
+        this.lobbies.add(lobby);
+   }
+
+   public void removeLobby(Lobby lobby){
+        this.lobbies.remove(lobby);
+   }
+
+    public void joinLobby(int id, Player player){
+        for(Lobby lobby:lobbies){
+            if(id == lobby.getId()){
+                player.setStatus("opponent");
+                player.setLobby(lobby);
+                lobby.setFull(true);
             }
         }
-        return false;
     }
-    public void createLobby(String name, Player player){
-        ThreadLobby lobby = new ThreadLobby(name, player);
-        this.lobbies.add(lobby);
-        new Thread(lobby).start();
-    }
-    public String getLobbies(){
-        String message = "Liste des lobbies : ";
-        for(ThreadLobby lobby:lobbies){
-            message += lobby.getName()+" / "+lobby.getPlayers()+" ||| ";
+
+    public JSONArray getLobbies(){
+        JSONArray jsonLobbies = new JSONArray();
+        for (Lobby lobby : this.lobbies) {
+            JSONObject jsonLobby = new JSONObject();
+            jsonLobby.put("name", lobby.getName());
+            jsonLobby.put("id", lobby.getId());
+            jsonLobby.put("full", lobby.isFull());
+            jsonLobby.put("creator", lobby.getCreator().toString());
+            JSONArray jsonPlayers = new JSONArray();
+            for (Player player : lobby.getPlayers()) {
+                JSONObject jsonPlayer = new JSONObject();
+                jsonPlayer.put("pseudo", player.getPseudo());
+                jsonPlayer.put("id", player.getId());
+                jsonPlayer.put("status", player.getStatus());
+                jsonPlayers.put(jsonPlayer);
+            }
+            jsonLobby.put("players", jsonPlayers.toString());
+            jsonLobbies.put(jsonLobby);
         }
-        return message;
+        return jsonLobbies;
     }
-    */
-    public void addClient() {
-        this.nbClient++;
+
+    public int giveIdClient(Player player){
+        this.lastIdClient++;
+        player.setId(this.lastIdClient);
+        return this.lastIdClient;
     }
-    public void removeClient(){
-        this.nbClient--;
+
+    public int giveIdLobby(Lobby lobby){
+        this.lastIdlobby++;
+        lobby.setId(this.lastIdlobby);
+        return this.lastIdlobby;
     }
-    public int getClient() {
-        return this.nbClient;
-    }/*
+
+    public ArrayList<Lobby> getArrayLobbies(){ return this.lobbies; }
+
+    public ArrayList<Player> getArrayPlayers(){ return this.players; }
+
+    public void addClient() { this.nbClient++; }
+
+    public void removeClient(){ this.nbClient--; }
+
+    public int getClient() { return this.nbClient; }
+
+    public String getName() { return name; }
+
+
+     /*
     public void close(Socket socket, Player player){
         System.out.println("Le thread s'arrête...");
         this.removeClient();
@@ -84,7 +120,5 @@ public class Server {
         //killer tout proprement
     }*/
 
-    public String getName() {
-        return name;
-    }
+
 }
