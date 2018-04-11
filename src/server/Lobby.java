@@ -30,9 +30,7 @@ public class Lobby {
         return players;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    public void setId(int id) { this.id = id; }
 
     public int getId() {
         return id;
@@ -42,11 +40,7 @@ public class Lobby {
         return creator;
     }
 
-    public boolean isFull() {
-        return full;
-    }
+    public boolean isFull() { return full; }
 
-    public void setFull(boolean full) {
-        this.full = full;
-    }
+    public void setFull(boolean full) { this.full = full; }
 }

@@ -2,7 +2,6 @@ package client;
 import client.gui.Frame;
 import org.json.*;
 
-import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -37,11 +36,12 @@ public class ThreadCient implements Runnable{
         this.jsonClient = formJSON();
         this.out.println(jsonClient.toString());
     }
+
     public void run() {
         while (true) {
             //System.out.println(this.jsonClient.toString() + "\n" + this.reception);
             try {
-                sleep(100);
+                sleep(200);
                 if (this.status.equals("emission")) {
                     int compteur = 0;
                     while(!this.execution(this.reception)){
@@ -69,7 +69,7 @@ public class ThreadCient implements Runnable{
         try {
             this.jsonServer = new JSONObject(reception);
             this.client.setJsonServer(this.jsonServer);
-            this.frame.getPanel().actualiser();
+            this.frame.getPanel().refresh();
             this.client.setId(this.jsonServer.getInt("id"));
 
 
@@ -82,7 +82,7 @@ public class ThreadCient implements Runnable{
             this.client.setArgumentInt(0);
             return true;
         }catch (Exception e){
-            System.out.println("Client : " + e.getMessage()); // PROBLEME
+            System.out.println("Problème execution : " + e.getMessage());
             return false;
         }
     }

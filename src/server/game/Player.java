@@ -15,7 +15,6 @@ public class Player {
     public Player(ThreadServer threadServer){
         this.threadServer = threadServer;
         this.server = this.threadServer.getServer();
-        this.server.getArrayPlayers().add(this);
     }
 
     public String getPseudo() {
@@ -38,19 +37,13 @@ public class Player {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    public void setId(int id) { this.id = id; }
 
     public String toString() {
         return getPseudo();
     }
 
-    public Lobby getLobby() {
-        return lobby;
-    }
+    public Lobby getLobby() { return lobby; }
 
-    public void setLobby(Lobby lobby) {
-        this.lobby = lobby;
-    }
+    public void setLobby(Lobby lobby) { this.lobby = lobby; }
 }

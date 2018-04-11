@@ -10,7 +10,7 @@ public class Game extends Panel {
     }
 
     @Override
-    public void actualiser() {
+    public void refresh() {
 
     }
 }

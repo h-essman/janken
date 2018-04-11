@@ -81,7 +81,7 @@ public class Menu extends Panel implements ActionListener {
     }
 
     @Override
-    public void actualiser() {
+    public void refresh() {
         System.out.println("J'actualise le menu");
     }
 

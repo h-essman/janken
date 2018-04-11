@@ -26,35 +26,39 @@ public class Server {
                 Socket socket = server.accept();
                 System.out.println("Nouveau client est connecté !");
                 new Thread(new ThreadServer(socket,this)).start();
-                addClient();
             }
         }
         catch (Exception e)
         {
-            System.out.println("Problème : "+e.getMessage());
+            System.out.println("Déconnexion");
         }
     }
 
-    public void createLobby(String name, Player player){
+    public String createLobby(String name, Player player){
         Lobby lobby = new Lobby(name, player, this);
         player.setStatus("creator");
         player.setLobby(lobby);
         giveIdLobby(lobby);
         this.lobbies.add(lobby);
+        return "Création du lobby "+lobby.getName()+" par "+player.getPseudo()+" "+player.getId();
    }
 
-   public void removeLobby(Lobby lobby){
+   public String removeLobby(Lobby lobby){
+        String message = "Lobby "+lobby.getName()+" effacé !";
         this.lobbies.remove(lobby);
+        return message;
    }
 
-    public void joinLobby(int id, Player player){
+    public String joinLobby(int id, Player player){
         for(Lobby lobby:lobbies){
             if(id == lobby.getId()){
                 player.setStatus("opponent");
                 player.setLobby(lobby);
                 lobby.setFull(true);
+                return player.getPseudo()+" "+player.getId()+" a rejoint le lobby "+lobby.getName();
             }
         }
+        return "Erreur joinLobby";
     }
 
     public JSONArray getLobbies(){
@@ -95,9 +99,18 @@ public class Server {
 
     public ArrayList<Player> getArrayPlayers(){ return this.players; }
 
-    public void addClient() { this.nbClient++; }
+    public String addClient(Player player) {
+        this.players.add(player);
+        this.nbClient++;
+        return "Ajout de "+player.getPseudo()+" "+player.getId();
+    }
 
-    public void removeClient(){ this.nbClient--; }
+    public String removeClient(Player player){
+        String message = "Suppression de "+ player.getPseudo() + " " + player.getId();
+        this.nbClient--;
+        this.players.remove(player);
+        return message;
+    }
 
     public int getClient() { return this.nbClient; }
 

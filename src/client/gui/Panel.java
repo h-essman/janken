@@ -14,7 +14,7 @@ public abstract class Panel extends JPanel {
         this.frame = frame;
     }
 
-    public abstract void actualiser();
+    public abstract void refresh();
 
     public Client getClient() {
         return client;

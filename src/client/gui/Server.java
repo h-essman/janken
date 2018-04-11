@@ -53,7 +53,7 @@ public class Server extends Panel implements ActionListener {
         listLobbies.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
 
-    public void actualiser(){
+    public void refresh(){
 
         this.pseudoServer.setText("Connecté au serveur : "+ this.getClient().getJsonServer().get("server"));
         this.nbClientServer.setText("Il y a  "+ this.getClient().getJsonServer().get("clients")+" connecté(s) au serveur.");
@@ -76,6 +76,7 @@ public class Server extends Panel implements ActionListener {
         }
         this.listLobbies.setSelectedIndex(this.choice);
     }
+
     public void actionPerformed(ActionEvent e){
 
         if (e.getSource() == this.btnCreate) {
@@ -102,7 +103,7 @@ public class Server extends Panel implements ActionListener {
                 }else if(jsonLobby.getInt("id")==this.correspondance.get(this.choice) && jsonLobby.getBoolean("full")){
                     JOptionPane.showMessageDialog(this,
                             "Ce lobby est plein !",
-                            "Error",2
+                            "Erreur",2
                     );
                 }
             }

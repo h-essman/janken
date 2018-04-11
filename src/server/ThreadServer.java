@@ -31,6 +31,7 @@ public class ThreadServer implements Runnable {
 
         this.player = new Player(this);
         this.server.giveIdClient(this.player);
+        System.out.println(this.server.addClient(this.player));
 
         try {
             this.out = new PrintWriter(this.socket.getOutputStream(), true);
@@ -49,7 +50,7 @@ public class ThreadServer implements Runnable {
         while (true) {
             //System.out.println(this.jsonServer.toString() + "\n" + this.reception);
             try {
-                sleep(200);
+                sleep(300);
                 if (this.status.equals("emission")) {
                     int compteur = 0;
                     while(!this.execution(this.reception)){
@@ -64,10 +65,9 @@ public class ThreadServer implements Runnable {
                     this.status = "emission";
                 }
             }catch(IOException e){
-                System.out.println("Erreur IO run ThreadServer : "+e.getMessage());
-                this.server.removeClient();
+                System.out.println(this.server.removeClient(player));
                 if(player.getStatus().equals("creator")) {
-                    this.server.removeLobby(this.player.getLobby());
+                    System.out.println(this.server.removeLobby(this.player.getLobby()));
                 }
                 break;
             }catch (InterruptedException e){
@@ -76,16 +76,17 @@ public class ThreadServer implements Runnable {
             }
         }
     }
+
     public boolean execution(String reception){
         try {
             this.jsonClient = new JSONObject(reception);
             this.player.setPseudo(this.jsonClient.getString("pseudo"));
 
             if(this.jsonClient.getString("command").equals("create")){
-                this.server.createLobby(this.jsonClient.getString("argumentString"),this.player);
+                System.out.println(this.server.createLobby(this.jsonClient.getString("argumentString"),this.player));
             }
             if(this.jsonClient.getString("command").equals("join")){
-                this.server.joinLobby(this.jsonClient.getInt("argumentInt"),this.player);
+                System.out.println(this.server.joinLobby(this.jsonClient.getInt("argumentInt"),this.player));
             }
 
             //ICI
@@ -99,6 +100,7 @@ public class ThreadServer implements Runnable {
             return false;
         }
     }
+
     public JSONObject formJSON(){
         JSONObject client=new JSONObject();
         client.put("server", this.server.getName());
