@@ -47,9 +47,9 @@ public class ThreadServer implements Runnable {
     public void run() {
 
         while (true) {
-            System.out.println(this.jsonServer.toString() + "\n" + this.reception);
+            //System.out.println(this.jsonServer.toString() + "\n" + this.reception);
             try {
-                sleep(500);
+                sleep(200);
                 if (this.status.equals("emission")) {
                     int compteur = 0;
                     while(!this.execution(this.reception)){

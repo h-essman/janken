@@ -12,6 +12,7 @@ import java.util.ArrayList;
 public class Server extends Panel implements ActionListener {
 
     private DefaultListModel listLobbiesModel;
+    private JScrollPane scrollListLobbies;
     private JLabel pseudoServer, nbClientServer;
     private JButton btnCreate, btnJoin;
     private JSONArray arrayLobbies;
@@ -46,16 +47,23 @@ public class Server extends Panel implements ActionListener {
         this.listLobbies = new JList(listLobbiesModel);
         this.listLobbies.setBounds(30, 70, 200, 200);
         this.add(this.listLobbies);
-
+        this.scrollListLobbies = new JScrollPane(listLobbies);
+        scrollListLobbies.setBounds(30, 70, 200, 200);
+        this.add(scrollListLobbies);
+        listLobbies.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
 
     public void actualiser(){
+
         this.pseudoServer.setText("Connecté au serveur : "+ this.getClient().getJsonServer().get("server"));
         this.nbClientServer.setText("Il y a  "+ this.getClient().getJsonServer().get("clients")+" connecté(s) au serveur.");
 
         this.arrayLobbies = this.getClient().getJsonServer().getJSONArray("lobbies");
         int i = 0;
+
+        this.choice = this.listLobbies.getSelectedIndex();
         this.listLobbiesModel.removeAllElements();
+
         for(Object lobby:arrayLobbies){
             JSONObject jsonLobby = (JSONObject) lobby;
             String message = jsonLobby.getString("name")+" créé par "+jsonLobby.getString("creator");
@@ -66,6 +74,7 @@ public class Server extends Panel implements ActionListener {
             this.correspondance.add(i, jsonLobby.getInt("id"));
             i++;
         }
+        this.listLobbies.setSelectedIndex(this.choice);
     }
     public void actionPerformed(ActionEvent e){
 
@@ -90,15 +99,13 @@ public class Server extends Panel implements ActionListener {
                     this.getClient().setCommand("join");
                     this.getClient().setArgumentInt(jsonLobby.getInt("id"));
                     this.getFrame().goNext("lobby");
-                }else{
+                }else if(jsonLobby.getInt("id")==this.correspondance.get(this.choice) && jsonLobby.getBoolean("full")){
                     JOptionPane.showMessageDialog(this,
                             "Ce lobby est plein !",
                             "Error",2
                     );
                 }
             }
-        }else if(e.getSource() == this.listLobbies){
-            this.choice = this.listLobbies.getSelectedIndex();
         }
     }
 
