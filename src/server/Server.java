@@ -30,7 +30,7 @@ public class Server {
         }
         catch (Exception e)
         {
-            System.out.println("Déconnexion");
+            System.out.println("Déconnexion d'un client...");
         }
     }
 
@@ -40,11 +40,11 @@ public class Server {
         player.setLobby(lobby);
         giveIdLobby(lobby);
         this.lobbies.add(lobby);
-        return "Création du lobby "+lobby.getName()+" par "+player.getPseudo()+" "+player.getId();
+        return "Création du lobby "+lobby.getName()+" ID "+lobby.getId()+" par "+player.getPseudo()+" ID "+player.getId();
    }
 
    public String removeLobby(Lobby lobby){
-        String message = "Lobby "+lobby.getName()+" effacé !";
+        String message = "Suppression du lobby "+lobby.getName()+" ID "+lobby.getId();
         this.lobbies.remove(lobby);
         return message;
    }
@@ -55,7 +55,7 @@ public class Server {
                 player.setStatus("opponent");
                 player.setLobby(lobby);
                 lobby.setFull(true);
-                return player.getPseudo()+" "+player.getId()+" a rejoint le lobby "+lobby.getName();
+                return player.getPseudo()+" ID "+player.getId()+" a rejoint le lobby "+lobby.getName()+" ID "+lobby.getId();
             }
         }
         return "Erreur joinLobby";
@@ -102,7 +102,7 @@ public class Server {
     }
 
     public String removeClient(Player player){
-        String message = "Suppression de "+ player.getPseudo() + " " + player.getId();
+        String message = "Suppression de "+ player.getPseudo() + " ID " + player.getId();
         this.nbClient--;
         this.players.remove(player);
         return message;
@@ -116,8 +116,6 @@ public class Server {
 
     public ArrayList<Player> getArrayPlayers(){ return this.players; }
 
-
-
      /*
     public void close(Socket socket, Player player){
         System.out.println("Le thread s'arrête...");
@@ -129,10 +127,6 @@ public class Server {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-    public void close(ThreadServer lobby){
-        //killer tout proprement
     }*/
-
 
 }
