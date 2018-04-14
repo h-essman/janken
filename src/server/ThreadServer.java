@@ -14,78 +14,97 @@ import static java.lang.Thread.sleep;
 public class ThreadServer implements Runnable {
 
     private Socket socket;
-    private Server server;
-    private Player player;
-    private JSONObject jsonServer;
-    private JSONObject jsonClient;
-    private String reception;
     private PrintWriter out;
     private BufferedReader in;
-    private String status = "reception";
+
+    private Server server;
+    private Player player;
+
+    private JSONObject jsonServer, jsonClient;
+
+    private String reception, emission;
+    private boolean waiting = true;
+
     private String command = "";
     private String argument = "";
 
-    public ThreadServer(Socket socket, Server server){
+    public ThreadServer(Socket socket, Server server) {
+
         this.socket = socket;
         this.server = server;
 
+        this.jsonServer = new JSONObject();
+        this.jsonClient = new JSONObject();
+
         this.player = new Player(this);
         this.server.giveIdClient(this.player);
+
         System.out.println(this.server.addClient(player));
 
         try {
             this.out = new PrintWriter(this.socket.getOutputStream(), true);
             this.in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
-        }
-        catch(IOException e){
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         }
 
-        this.jsonServer = new JSONObject();
-        this.jsonClient = new JSONObject();
     }
 
     public void run() {
 
         while (true) {
+
             //System.out.println(this.jsonServer.toString() + "\n" + this.reception);
+
             try {
                 sleep(300);
-                if (this.status.equals("emission")) {
+
+                if (!this.waiting) {
                     int compteur = 0;
-                    while(!this.execution(this.reception)){
+
+                    while (!this.execution(this.reception)) {
                         sleep(2000);
-                        compteur ++;
+                        if(compteur == 3){
+                            System.out.println("Kick !!!");
+                            this.socket.close();
+                            break;
+                        }
+                        compteur++;
                         System.out.println("Try " + compteur);
                     }
-                    this.out.println(jsonServer.toString());
-                    this.status = "reception";
+
+                    this.out.println(this.emission);
+                    this.waiting = true;
+
                 } else {
                     this.reception = this.in.readLine();
-                    this.status = "emission";
+                    this.waiting = false;
                 }
-            }catch(IOException e){
-                System.out.println(this.server.removeClient(player));
-                if(player.getStatus().equals("creator")) {
-                    System.out.println(this.server.removeLobby(this.player.getLobby()));
-                }
-                break;
-            }catch (InterruptedException e){
-                System.out.println("Erreur SLEEP run ThreadServer : "+e.getMessage());
+
+            } catch (Exception e) {
+                this.kill(e.getMessage());
                 break;
             }
         }
+
     }
 
-    public boolean execution(String reception){
+    private boolean execution(String reception) {
+
         try {
+
+            if (this.server.isSecure()) {
+                reception = this.server.decrypt(reception);
+            }
+
             this.jsonClient = new JSONObject(reception);
             this.player.setPseudo(this.jsonClient.getString("pseudo"));
-            if(this.jsonClient.getString("command").equals("create")){
-                System.out.println(this.server.createLobby(this.jsonClient.getString("argumentString"),this.player));
+
+            if (this.jsonClient.getString("command").equals("create")) {
+                System.out.println(this.server.createLobby(this.jsonClient.getString("argumentString"), this.player));
             }
-            if(this.jsonClient.getString("command").equals("join")){
-                System.out.println(this.server.joinLobby(this.jsonClient.getInt("argumentInt"),this.player));
+            if (this.jsonClient.getString("command").equals("join")) {
+                System.out.println(this.server.joinLobby(this.jsonClient.getInt("argumentInt"), this.player));
             }
 
             //ICI
@@ -93,21 +112,48 @@ public class ThreadServer implements Runnable {
             this.jsonServer = formJSON();
             this.command = "";
             this.argument = "";
+
+            if (this.server.isSecure()) {
+                this.emission = this.server.encrypt(this.jsonServer.toString());
+            } else {
+                this.emission = this.jsonServer.toString();
+            }
+
             return true;
-        }catch (Exception e){
-            System.out.println(this.server.getArrayLobbies().toString());
+        } catch (Exception e) {
+
             return false;
         }
+
     }
 
-    public JSONObject formJSON(){
-        JSONObject client=new JSONObject();
+    private JSONObject formJSON() {
+
+        JSONObject client = new JSONObject();
         client.put("server", this.server.getName());
         client.put("clients", this.server.getClient());
         client.put("id", this.player.getId());
         client.put("command", this.getCommand());
         client.put("lobbies", this.server.getLobbies());
+
         return client;
+
+    }
+
+    public void kill(String error){
+
+        System.out.println("Arrêt d'un thread : "+error);
+        System.out.println(this.server.removeClient(player));
+
+        if (player.getStatus().equals("creator")) {
+            System.out.println(this.server.removeLobby(this.player.getLobby()));
+        }
+        try {
+            this.socket.close();
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+
     }
 
     public String getCommand() { return command; }
@@ -119,4 +165,5 @@ public class ThreadServer implements Runnable {
     public void setArgument(String argument) { this.argument = argument; }
 
     public Server getServer() { return server; }
+
 }

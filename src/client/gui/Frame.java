@@ -1,10 +1,9 @@
 package client.gui;
+
 import client.Client;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
+import java.awt.*;
 
 public class Frame extends JFrame {
 
@@ -37,16 +36,20 @@ public class Frame extends JFrame {
         this.setVisible(true);
 
         this.goNext("menu");
+
     }
 
     public void goNext(String stage) {
+
         switch (stage) {
+
             case "menu":
                 this.setTitle("Janken - MENU");
-                this.setSize(440, 240);
+                this.setSize(440, 250);
                 this.cardLayout.show(this.panel, "menu");
                 this.client.setState("menu");
                 break;
+
             case "server":
                 this.setTitle("Janken - SERVER");
                 this.setSize(440, 350);
@@ -54,32 +57,41 @@ public class Frame extends JFrame {
                 this.client.setState("server");
 
                 break;
+
             case "lobby":
                 this.setTitle("Janken - LOBBY");
                 this.setSize(440, 400);
                 this.cardLayout.show(this.panel, "lobby");
                 this.client.setState("lobby");
                 break;
+
             case "game":
                 this.setTitle("Janken - GAME");
                 this.setSize(600, 600);
                 this.cardLayout.show(this.panel, "game");
                 this.client.setState("game");
                 break;
+
         }
     }
 
     public Panel getPanel() {
+
         switch (this.client.getState()) {
             case "menu":
+
                 return this.menu;
             case "server":
+
                 return this.server;
             case "lobby":
+
                 return this.lobby;
             case "game":
+
                 return this.game;
         }
+
         return null;
     }
 }

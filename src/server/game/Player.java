@@ -12,8 +12,9 @@ public class Player {
     private Lobby lobby;
     private Server server;
 
-    public Player(ThreadServer threadServer){
+    public Player(ThreadServer threadServer) {
         this.threadServer = threadServer;
+        this.status = "new";
         this.server = this.threadServer.getServer();
     }
 
@@ -37,13 +38,19 @@ public class Player {
         return id;
     }
 
-    public void setId(int id) { this.id = id; }
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String toString() {
         return getPseudo();
     }
 
-    public Lobby getLobby() { return lobby; }
+    public Lobby getLobby() {
+        return lobby;
+    }
 
-    public void setLobby(Lobby lobby) { this.lobby = lobby; }
+    public void setLobby(Lobby lobby) {
+        this.lobby = lobby;
+    }
 }

@@ -14,7 +14,7 @@ public class Lobby {
     private ArrayList<Player> players;
 
 
-    public Lobby(String name, Player creator, Server server){
+    public Lobby(String name, Player creator, Server server) {
         this.players = new ArrayList<>();
         this.name = name;
         this.creator = creator;
@@ -30,7 +30,9 @@ public class Lobby {
         return players;
     }
 
-    public void setId(int id) { this.id = id; }
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public int getId() {
         return id;
@@ -40,7 +42,11 @@ public class Lobby {
         return creator;
     }
 
-    public boolean isFull() { return full; }
+    public boolean isFull() {
+        return full;
+    }
 
-    public void setFull(boolean full) { this.full = full; }
+    public void setFull(boolean full) {
+        this.full = full;
+    }
 }
