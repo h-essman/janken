@@ -1,71 +1,116 @@
 package client;
-import server.Server;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.util.Scanner;
+import client.gui.Frame;
+import com.google.common.base.Charsets;
+import org.apache.commons.codec.binary.Base64;
+import org.json.JSONObject;
 
-import static java.lang.Thread.sleep;
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+
 
 public class Client {
 
-    private String pseudo;
-    private boolean waiting = false;
-    private String message;
-    private PrintWriter out;
+    private String pseudo, state, command, argumentString;
+    private int id, argumentInt;
 
-    public Client(String host, int port, String pseudo){
+    private Frame frame;
+    private JSONObject jsonServer;
+
+    private byte[] passphrase;
+    private boolean secure;
+
+    public Client(Frame frame) {
+        this.frame = frame;
+    }
+
+    public boolean connexion(String host, int port, String pseudo, boolean secure) {
 
         try {
-            Socket socket = new Socket(host, port);
 
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            this.out = out;
+            this.pseudo = pseudo;
+            this.command = "";
+            this.secure = secure;
 
-            Scanner clavier = new Scanner(System.in);
-            out.println(pseudo);
-            in.readLine();
-            while (true) {
+            new Thread(new ThreadCient(host, port, this, this.frame)).start();
 
-                if(!waiting) {
-                    System.out.print("commande : ");
-                    this.message = clavier.nextLine();
-                    out.println(message);
-                }
-                String reponse = in.readLine();
-                if (reponse.equals("/stop")) {
-                    System.out.println("Thread a reçu un stop donc arrêt du thread...");
-                    break;
-                }else if (reponse.equals("/stopwaiting")) {
-                    this.waiting = false;
-                    System.out.println("Opponent found !");
-                    System.out.println("Game launched");
-                }else if (reponse.equals("/waiting")) {
-                    this.waiting = true;
-                    System.out.println("Waiting...");
-                }else{
-                    System.out.println("réponse : " + reponse);
-                }
-            }
-            System.out.println("Fin du client. Salut !");
-            in.close();
+            return true;
         } catch (Exception e) {
-            System.err.println("Problème client : " + e.getMessage());
+            e.printStackTrace();
+
+            return false;
         }
-        this.pseudo = pseudo;
     }
 
-    public String getPseudo() {
-        return this.pseudo;
-    }
-    public void setPseudo(String pseudo) {
-        this.pseudo=pseudo;
+    public String encrypt(String str) throws Exception {
+
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(this.passphrase, "AES"));
+
+        return Base64.encodeBase64URLSafeString(cipher.doFinal(str.getBytes(Charsets.UTF_8)));
+
     }
 
-    public void sendOut(String message) {
-        this.out.println(message);
+    public String decrypt(String encryptedInput) throws Exception {
+
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(this.passphrase, "AES"));
+
+        return new String(cipher.doFinal(Base64.decodeBase64(encryptedInput)), Charsets.UTF_8);
+
     }
+
+    private byte[] sha256digest16(String clearpassphrase) throws NoSuchAlgorithmException {
+
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        digest.reset();
+        digest.update(clearpassphrase.getBytes(Charsets.UTF_8));
+        byte[] sha256 = digest.digest();
+
+        return Arrays.copyOf(sha256, 16);
+
+    }
+
+    public void setPassphrase(String passphrase){
+
+        try {
+            this.passphrase = sha256digest16(passphrase);
+        }catch (Exception e){
+            System.out.println("Erreur lors du chiffrement de la passphrase : "+e.getMessage());
+        }
+
+    }
+
+    public String getPseudo() { return this.pseudo; }
+
+    public void setPseudo(String pseudo) { this.pseudo = pseudo; }
+
+    public String getState() { return state; }
+
+    public void setState(String state) { this.state = state; }
+
+    public String getCommand() { return command; }
+
+    public void setCommand(String commande) { this.command = commande; }
+
+    public int getId() { return id; }
+
+    public void setId(int id) { this.id = id; }
+
+    public void setJsonServer(JSONObject jsonServer) { this.jsonServer = jsonServer; }
+
+    public JSONObject getJsonServer() { return this.jsonServer; }
+
+    public String getArgumentString() { return argumentString; }
+
+    public void setArgumentString(String argument) { this.argumentString = argument; }
+
+    public int getArgumentInt() { return argumentInt; }
+
+    public void setArgumentInt(int argumentInt) { this.argumentInt = argumentInt; }
+
+    public boolean isSecure() { return secure; }
 }
