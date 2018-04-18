@@ -10,12 +10,15 @@ public class Player {
     private ThreadServer threadServer;
     private int id;
     private Lobby lobby;
-    private Server server;
 
     public Player(ThreadServer threadServer) {
         this.threadServer = threadServer;
         this.status = "new";
-        this.server = this.threadServer.getServer();
+    }
+
+    public void setLobby(Lobby lobby) {
+        this.lobby = lobby;
+        lobby.getPlayers().add(this);
     }
 
     public String getPseudo() {
@@ -50,7 +53,4 @@ public class Player {
         return lobby;
     }
 
-    public void setLobby(Lobby lobby) {
-        this.lobby = lobby;
-    }
 }

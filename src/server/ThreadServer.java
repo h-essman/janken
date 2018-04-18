@@ -27,6 +27,7 @@ public class ThreadServer implements Runnable {
 
     private String command = "";
     private String argument = "";
+    private String response = "";
 
     public ThreadServer(Socket socket, Server server) {
 
@@ -58,8 +59,8 @@ public class ThreadServer implements Runnable {
                 if (!this.waiting) {
                     int compteur = 0;
                     while (!this.execution(this.reception)) {
-                        sleep(1000);
-                        if(compteur == 3){
+                        sleep(500);
+                        if(compteur == 2){
                             System.out.println("Kick !!!");
                             throw new java.lang.Exception("kicked");
                         }
@@ -87,26 +88,26 @@ public class ThreadServer implements Runnable {
             this.jsonClient = new JSONObject(reception);
             this.player.setPseudo(this.jsonClient.getString("pseudo"));
 
+            //TODO Execution command + réponse bool
+
             switch (this.jsonClient.getString("state")){
 
                 case "server":
                     switch (this.jsonClient.getString("command")) {
                         case "create":
-                            System.out.println("salut");
-                            this.server.createLobby(this.jsonClient.getString("argumentString"), this.player);
+                            this.server.createLobby(this.jsonClient.getString("argument"), this.player);
                             this.command = "create";
                             break;
 
                         case "join":
-                            this.server.joinLobby(this.jsonClient.getInt("argumentInt"), this.player);
                             this.command = "join";
+                            this.response = this.server.joinLobby(this.jsonClient.getInt("argument"), this.player) ? "ok" : "ko";
                             break;
                     }
                     break;
 
                 case "lobby":
                     //ready or not
-                    System.out.println("ok");
                     try {
                         switch (this.jsonClient.getString("command")) {
                             case "launch": //if all ready and player creator
@@ -141,24 +142,23 @@ public class ThreadServer implements Runnable {
         client.put("server", this.server.getName());
         client.put("clients", this.server.getClient());
         client.put("id", this.player.getId());
-        client.put("command", this.getCommand());
+        client.put("command", this.command);
+        client.put("response", this.response);
 
+        //TODO JSON à envoyer suivant les states
         switch (this.jsonClient.getString("state")){
             case "server":
                 client.put("lobbies", this.server.getLobbies());
                 break;
 
             case "lobby":
-                try {
-                    client.put("players", this.server.getLobbyPlayers(this.player));
-                }catch (Exception e){
-                    System.out.println("ici" + e.getMessage());
-                }
+                client.put("players", this.server.getLobbyPlayers(this.player));
                 break;
 
             case "game":
                 break;
         }
+
         this.command = "";
         this.argument = "";
         return client;
@@ -176,17 +176,5 @@ public class ThreadServer implements Runnable {
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
-
     }
-
-    public String getCommand() { return command; }
-
-    public void setCommand(String command) { this.command = command; }
-
-    public String getArgument() { return argument; }
-
-    public void setArgument(String argument) { this.argument = argument; }
-
-    public Server getServer() { return server; }
-
 }

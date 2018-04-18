@@ -94,4 +94,10 @@ public class Frame extends JFrame {
 
         return null;
     }
+
+    public void showError(String message) {
+        JOptionPane.showMessageDialog(this,
+                message,
+                "Erreur", 2);
+    }
 }

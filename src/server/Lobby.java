@@ -18,7 +18,6 @@ public class Lobby {
         this.name = name;
         this.creator = creator;
         this.server = server;
-        this.players.add(this.creator);
     }
 
     public boolean isFull() {

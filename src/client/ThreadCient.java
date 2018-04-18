@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import static java.lang.Thread.getDefaultUncaughtExceptionHandler;
 import static java.lang.Thread.sleep;
 
 public class ThreadCient implements Runnable {
@@ -37,9 +38,11 @@ public class ThreadCient implements Runnable {
 
         this.jsonClient = formJSON();
         this.out.println(this.client.isSecure() ? this.client.encrypt(jsonClient.toString()) : jsonClient.toString());
+
     }
 
     public void run() {
+        this.client.setConnected(true);
         while (true) {
             //System.out.println(this.jsonClient.toString() + "\n" + this.reception);
             try {
@@ -47,12 +50,10 @@ public class ThreadCient implements Runnable {
                 if (!this.waiting) {
                     int compteur = 0;
                     while (!this.execution(this.reception)) {
-                        sleep(1000);
-                        if(compteur == 3){
+                        sleep(500);
+                        if(compteur == 2){
                             System.out.println("Deconnexion !");
-                            this.socket.close();
-                            this.client.goNext("menu");
-                            return;
+                            throw new java.lang.Exception("disconnected");
                         }
                         compteur++;
                         System.out.println("Try " + compteur);
@@ -64,7 +65,7 @@ public class ThreadCient implements Runnable {
                     this.waiting = false;
                 }
             } catch (Exception e) {
-                System.out.println("Problème run ThreadClient : " + e.getMessage());
+                this.kill(e.getMessage());
                 break;
             }
         }
@@ -79,10 +80,15 @@ public class ThreadCient implements Runnable {
             this.client.setJsonServer(this.jsonServer);
             this.client.setId(this.jsonServer.getInt("id"));
 
-            //ICI
+            //TODO gestion des réponses du serveur aux commandes
+
             switch (this.jsonServer.getString("command")){
                 case "join":
-                    this.client.goNext("lobby");
+                    if(this.jsonServer.getString("response").equals("ok")){
+                        this.client.goNext("lobby");
+                    }else{
+                        this.frame.showError("Impossible de rejoindre ce lobby...");
+                    }
                     break;
                 case "create":
                     this.client.goNext("lobby");
@@ -94,28 +100,40 @@ public class ThreadCient implements Runnable {
             try {
                 this.frame.getPanel().refresh();
             }catch (Exception e){
-                System.out.println("Skip refresh");
+                System.out.println("Attente de la synchronisation : "+e.getMessage());
             }
             return true;
         } catch (Exception e) {
-            System.out.println("Problème execution : " + e.getMessage());
+            System.out.println("Problème execution : "+e.getMessage());
             return false;
         }
     }
 
     private JSONObject formJSON() {
-        System.out.println(this.client.getState());
         JSONObject client = new JSONObject();
+
+        //TODO JSON à envoyer suivant les states
+
         client.put("pseudo", this.client.getPseudo());
         client.put("id", this.client.getId());
         client.put("state", this.client.getState());
         client.put("command", this.client.getCommand());
-        client.put("argumentString", this.client.getArgumentString());
-        client.put("argumentInt", this.client.getArgumentInt());
+        client.put("argument", this.client.getArgument());
 
         this.client.setCommand("");
-        this.client.setArgumentString("");
-        this.client.setArgumentInt(0);
+        this.client.setArgument("");
         return client;
+    }
+
+    public void kill(String error){
+        this.client.setConnected(false);
+        this.client.goNext("menu");
+        this.frame.showError("Vous avez été déconnecté du serveur !");
+        try {
+            this.socket.close();
+            System.out.println("Socket fermé : "+error);
+        }catch (Exception e){
+            System.out.println("Erreur fermeture socket : "+e.getMessage());
+        }
     }
 }

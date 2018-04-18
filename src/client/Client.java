@@ -14,14 +14,16 @@ import java.util.Arrays;
 
 public class Client {
 
-    private String pseudo, state, command, argumentString;
-    private int id, argumentInt;
+    private String pseudo, state, command;
+    private Object argument;
+    private int id;
 
     private Frame frame;
     private JSONObject jsonServer;
 
     private byte[] passphrase;
     private boolean secure;
+    private boolean connected = false;
 
     public Client(Frame frame) {
         this.frame = frame;
@@ -39,8 +41,7 @@ public class Client {
 
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
-
+            System.out.println("Echec de la connexion : "+e.getMessage());
             return false;
         }
     }
@@ -104,15 +105,17 @@ public class Client {
 
     public JSONObject getJsonServer() { return this.jsonServer; }
 
-    public String getArgumentString() { return argumentString; }
+    public Object getArgument() { return argument; }
 
-    public void setArgumentString(String argument) { this.argumentString = argument; }
+    public void setArgument(String argument) { this.argument = argument; }
 
-    public int getArgumentInt() { return argumentInt; }
-
-    public void setArgumentInt(int argumentInt) { this.argumentInt = argumentInt; }
+    public void setArgument(int argument) { this.argument = argument; }
 
     public boolean isSecure() { return secure; }
 
     public void goNext(String state){ this.frame.goNext(state);}
+
+    public boolean isConnected(){ return this.connected; }
+
+    public void setConnected(boolean connected){ this.connected = connected; }
 }

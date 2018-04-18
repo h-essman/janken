@@ -8,6 +8,8 @@ import java.awt.event.ActionListener;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import static java.lang.Thread.sleep;
+
 public class Menu extends Panel implements ActionListener {
 
 
@@ -87,36 +89,36 @@ public class Menu extends Panel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 
         if (e.getSource() == this.btnQuit) {
-
             System.exit(0);
 
         } else if (e.getSource() == this.btnConnexion) {
-
             if (inputHost.getText().length() == 0 | inputPseudo.getText().length() == 0 | inputPort.getText().length() == 0) {
-
-                JOptionPane.showMessageDialog(this,
-                        "Des champs sont vides...",
-                        "Erreur", 1);
+                this.getFrame().showError("Des champs sont vides...");
 
             } else {
-
                 if (this.checkBoxSecure.isSelected()) {
-
-                    this.getClient().setPassphrase(JOptionPane.showInputDialog(this,
+                    String message = JOptionPane.showInputDialog(this,
                             "Entrer la passphrase :",
-                            "Connexion sécurisée", 3));
+                            "Connexion sécurisée", 3);
+                            if(message != null){
+                                this.getClient().setPassphrase(message);
+                            }else{
+                                return;
+                            }
                 }
 
                 if (this.getClient().connexion(inputHost.getText(), Integer.parseInt(inputPort.getText()), inputPseudo.getText(), this.checkBoxSecure.isSelected())) {
+                    try{
+                        sleep(4000);
+                        if(this.getClient().isConnected()){
+                            this.getFrame().goNext("server");
+                        }
+                    }catch (Exception e1){
+                        this.getFrame().goNext("server");
+                    }
 
-                    this.getFrame().goNext("server");
-
-                } else {
-
-                    JOptionPane.showMessageDialog(this,
-                            "Erreur de connexion...",
-                            "Erreur", 1);
-
+                }else{
+                   this.getFrame().showError("Erreur de connexion...");
                 }
             }
         }

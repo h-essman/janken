@@ -85,16 +85,21 @@ public class Server {
         System.out.println(message);
     }
 
-    public void joinLobby(int id, Player player) {
+    public boolean joinLobby(int id, Player player) {
         for (Lobby lobby : lobbies) {
-            if (id == lobby.getId()) {
+            if (id == lobby.getId() && !lobby.isFull()) {
                 player.setStatus("opponent");
                 player.setLobby(lobby);
                 System.out.println(player.getPseudo() + " ID " + player.getId() + " a rejoint le lobby " +
                         lobby.getName() + " ID " + lobby.getId());
+                return true;
+            }else if(id == lobby.getId() && lobby.isFull()){
+                System.out.println(player.getPseudo()+" ID "+player.getId()+" n'a pas pu rejoindre car le lobby est PLEIN");
+                return false;
             }
         }
-        System.out.println("Erreur joinLobby");
+        System.out.println(player.getPseudo()+" ID "+player.getId()+" n'a pas pu rejoindre car le lobby est introuvable");
+        return false;
     }
 
     public JSONArray getLobbies() {
