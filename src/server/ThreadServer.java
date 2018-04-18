@@ -38,8 +38,7 @@ public class ThreadServer implements Runnable {
 
         this.player = new Player(this);
         this.server.giveIdClient(this.player);
-
-        System.out.println(this.server.addClient(player));
+        this.server.addClient(player);
 
         try {
             this.out = new PrintWriter(this.socket.getOutputStream(), true);
@@ -53,103 +52,127 @@ public class ThreadServer implements Runnable {
     public void run() {
 
         while (true) {
-
             //System.out.println(this.jsonServer.toString() + "\n" + this.reception);
-
             try {
                 sleep(300);
-
                 if (!this.waiting) {
                     int compteur = 0;
-
                     while (!this.execution(this.reception)) {
-                        sleep(2000);
+                        sleep(1000);
                         if(compteur == 3){
                             System.out.println("Kick !!!");
-                            this.socket.close();
-                            break;
+                            throw new java.lang.Exception("kicked");
                         }
                         compteur++;
                         System.out.println("Try " + compteur);
                     }
-
                     this.out.println(this.emission);
                     this.waiting = true;
-
                 } else {
                     this.reception = this.in.readLine();
                     this.waiting = false;
                 }
-
             } catch (Exception e) {
                 this.kill(e.getMessage());
                 break;
             }
         }
-
     }
 
     private boolean execution(String reception) {
-
         try {
-
             if (this.server.isSecure()) {
                 reception = this.server.decrypt(reception);
             }
-
             this.jsonClient = new JSONObject(reception);
             this.player.setPseudo(this.jsonClient.getString("pseudo"));
 
-            if (this.jsonClient.getString("command").equals("create")) {
-                System.out.println(this.server.createLobby(this.jsonClient.getString("argumentString"), this.player));
+            switch (this.jsonClient.getString("state")){
+
+                case "server":
+                    switch (this.jsonClient.getString("command")) {
+                        case "create":
+                            System.out.println("salut");
+                            this.server.createLobby(this.jsonClient.getString("argumentString"), this.player);
+                            this.command = "create";
+                            break;
+
+                        case "join":
+                            this.server.joinLobby(this.jsonClient.getInt("argumentInt"), this.player);
+                            this.command = "join";
+                            break;
+                    }
+                    break;
+
+                case "lobby":
+                    //ready or not
+                    System.out.println("ok");
+                    try {
+                        switch (this.jsonClient.getString("command")) {
+                            case "launch": //if all ready and player creator
+                                break;
+                            case "ready":
+                                break;
+                            case "notready":
+                                break;
+                            case "quit":
+                                break;
+                            default:
+                                break;
+                        }
+                    }catch (Exception e){
+                        System.out.println(e.getMessage());
+                    }
+                    break;
+
+                case "game":
+                    break;
             }
-            if (this.jsonClient.getString("command").equals("join")) {
-                System.out.println(this.server.joinLobby(this.jsonClient.getInt("argumentInt"), this.player));
-            }
-
-            //ICI
-
-            this.jsonServer = formJSON();
-            this.command = "";
-            this.argument = "";
-
-            if (this.server.isSecure()) {
-                this.emission = this.server.encrypt(this.jsonServer.toString());
-            } else {
-                this.emission = this.jsonServer.toString();
-            }
-
+            this.jsonServer = this.formJSON();
+            this.emission = this.server.isSecure() ? this.server.encrypt(this.jsonServer.toString()) : this.jsonServer.toString();
             return true;
         } catch (Exception e) {
-
             return false;
         }
-
     }
 
     private JSONObject formJSON() {
-
         JSONObject client = new JSONObject();
         client.put("server", this.server.getName());
         client.put("clients", this.server.getClient());
         client.put("id", this.player.getId());
         client.put("command", this.getCommand());
-        client.put("lobbies", this.server.getLobbies());
 
+        switch (this.jsonClient.getString("state")){
+            case "server":
+                client.put("lobbies", this.server.getLobbies());
+                break;
+
+            case "lobby":
+                try {
+                    client.put("players", this.server.getLobbyPlayers(this.player));
+                }catch (Exception e){
+                    System.out.println("ici" + e.getMessage());
+                }
+                break;
+
+            case "game":
+                break;
+        }
+        this.command = "";
+        this.argument = "";
         return client;
-
     }
 
     public void kill(String error){
-
         System.out.println("Arrêt d'un thread : "+error);
-        System.out.println(this.server.removeClient(player));
-
+        this.server.removeClient(player);
         if (player.getStatus().equals("creator")) {
-            System.out.println(this.server.removeLobby(this.player.getLobby()));
+            this.server.removeLobby(this.player.getLobby());
         }
         try {
             this.socket.close();
+            System.out.println("Socket fermé");
         }catch (Exception e){
             System.out.println(e.getMessage());
         }

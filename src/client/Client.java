@@ -113,4 +113,6 @@ public class Client {
     public void setArgumentInt(int argumentInt) { this.argumentInt = argumentInt; }
 
     public boolean isSecure() { return secure; }
+
+    public void goNext(String state){ this.frame.goNext(state);}
 }

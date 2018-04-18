@@ -66,7 +66,7 @@ public class Server {
 
     }
 
-    public String createLobby(String name, Player player) {
+    public void createLobby(String name, Player player) {
 
         Lobby lobby = new Lobby(name, player, this);
         player.setStatus("creator");
@@ -74,128 +74,107 @@ public class Server {
         giveIdLobby(lobby);
         this.lobbies.add(lobby);
 
-        return "Création du lobby " + lobby.getName() + " ID " + lobby.getId() +
-                " par " + player.getPseudo() + " ID " + player.getId();
+        System.out.println("Création du lobby " + lobby.getName() + " ID " + lobby.getId() +
+                " par " + player.getPseudo() + " ID " + player.getId());
 
     }
 
-    public String removeLobby(Lobby lobby) {
-
+    public void removeLobby(Lobby lobby) {
         String message = "Suppression du lobby " + lobby.getName() + " ID " + lobby.getId();
         this.lobbies.remove(lobby);
-
-        return message;
-
+        System.out.println(message);
     }
 
-    public String joinLobby(int id, Player player) {
-
+    public void joinLobby(int id, Player player) {
         for (Lobby lobby : lobbies) {
             if (id == lobby.getId()) {
                 player.setStatus("opponent");
                 player.setLobby(lobby);
-                lobby.setFull(true);
-
-                return player.getPseudo() + " ID " + player.getId() + " a rejoint le lobby " +
-                        lobby.getName() + " ID " + lobby.getId();
+                System.out.println(player.getPseudo() + " ID " + player.getId() + " a rejoint le lobby " +
+                        lobby.getName() + " ID " + lobby.getId());
             }
         }
-        return "Erreur joinLobby";
-
+        System.out.println("Erreur joinLobby");
     }
 
     public JSONArray getLobbies() {
-
         JSONArray jsonLobbies = new JSONArray();
-
         for (Lobby lobby : this.lobbies) {
             JSONObject jsonLobby = new JSONObject();
             jsonLobby.put("name", lobby.getName());
             jsonLobby.put("id", lobby.getId());
             jsonLobby.put("full", lobby.isFull());
             jsonLobby.put("creator", lobby.getCreator().toString());
-            /* TODO : S'inspirer pour envoyer le contenu d'un lobby aux joueurs concernés
-            JSONArray jsonPlayers = new JSONArray();
-            for (Player player : lobby.getPlayers()) {
-                JSONObject jsonPlayer = new JSONObject();
-                jsonPlayer.put("pseudo", player.getPseudo());
-                jsonPlayer.put("id", player.getId());
-                jsonPlayer.put("status", player.getStatus());
-                jsonPlayers.put(jsonPlayer);
-            }
-            jsonLobby.put("players", jsonPlayers.toString());
-            */
             jsonLobbies.put(jsonLobby);
         }
-
         return jsonLobbies;
+    }
 
+    public JSONArray getLobbyPlayers(Player player){
+        JSONArray jsonPlayers = new JSONArray();
+        Lobby lobby = player.getLobby();
+        for (Player p : lobby.getPlayers()) {
+            JSONObject jsonPlayer = new JSONObject();
+            jsonPlayer.put("pseudo", p.getPseudo());
+            jsonPlayer.put("id", p.getId());
+            jsonPlayer.put("status", p.getStatus());
+            jsonPlayers.put(jsonPlayer);
+        }
+        return jsonPlayers;
     }
 
     public int giveIdClient(Player player) {
-
         this.lastIdClient++;
         player.setId(this.lastIdClient);
-
         return this.lastIdClient;
-
     }
 
     public int giveIdLobby(Lobby lobby) {
-
         this.lastIdlobby++;
         lobby.setId(this.lastIdlobby);
-
         return this.lastIdlobby;
-
     }
 
-    public String addClient(Player player) {
+    public Lobby getLobbyById(int id){
+        for (Lobby lobby:lobbies){
+            if (lobby.getId() == id){
+                return lobby;
+            }
+        }
+        return null;
+    }
 
+    public void addClient(Player player) {
         this.players.add(player);
         this.nbClient++;
-
-        return "Ajout du joueur ID " + player.getId();
-
+        System.out.println("Ajout du joueur ID " + player.getId());
     }
 
-    public String removeClient(Player player) {
-
+    public void removeClient(Player player) {
         String message = "Suppression de " + player.getPseudo() + " ID " + player.getId();
         this.nbClient--;
         this.players.remove(player);
-
-        return message;
-
+        System.out.println(message);
     }
 
     public String encrypt(String str) throws Exception{
-
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(this.passphrase, "AES"));
-
         return Base64.encodeBase64URLSafeString(cipher.doFinal(str.getBytes(Charsets.UTF_8)));
-
     }
 
     public String decrypt(String encryptedInput) throws Exception{
-
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(this.passphrase, "AES"));
-
         return new String(cipher.doFinal(Base64.decodeBase64(encryptedInput)), Charsets.UTF_8);
-
     }
 
     public byte[] sha256digest16(String clearpassphrase) throws NoSuchAlgorithmException {
-
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         digest.reset();
         digest.update(clearpassphrase.getBytes(Charsets.UTF_8));
         byte[] sha256 = digest.digest();
-
         return Arrays.copyOf(sha256, 16);
-
     }
 
     public int getClient() { return this.nbClient; }

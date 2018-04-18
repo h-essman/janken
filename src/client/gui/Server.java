@@ -98,7 +98,6 @@ public class Server extends Panel implements ActionListener {
 
                 this.getClient().setCommand("create");
                 this.getClient().setArgumentString(inputName);
-                this.getFrame().goNext("lobby");
 
             } else {
 
@@ -117,7 +116,6 @@ public class Server extends Panel implements ActionListener {
 
                     this.getClient().setCommand("join");
                     this.getClient().setArgumentInt(jsonLobby.getInt("id"));
-                    this.getFrame().goNext("lobby");
 
                 } else if (jsonLobby.getInt("id") == this.correspondance.get(this.choice) && jsonLobby.getBoolean("full")) {
 

@@ -10,7 +10,6 @@ public class Lobby {
     private Server server;
     private int id;
     private Player creator;
-    private boolean full;
     private ArrayList<Player> players;
 
 
@@ -20,6 +19,14 @@ public class Lobby {
         this.creator = creator;
         this.server = server;
         this.players.add(this.creator);
+    }
+
+    public boolean isFull() {
+        if (this.players.size() < 2){
+            return false;
+        }else{
+            return true;
+        }
     }
 
     public String getName() {
@@ -42,11 +49,4 @@ public class Lobby {
         return creator;
     }
 
-    public boolean isFull() {
-        return full;
-    }
-
-    public void setFull(boolean full) {
-        this.full = full;
-    }
 }
