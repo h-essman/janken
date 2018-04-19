@@ -101,10 +101,7 @@ public class Server extends Panel implements ActionListener {
 
             } else {
 
-                JOptionPane.showMessageDialog(this,
-                        "Vous n'avez pas rentré de nom !",
-                        "Error", 2
-                );
+                this.getFrame().showError("Vous n'avez pas rentré de nom !");
 
             }
         } else if (e.getSource() == this.btnJoin) {
@@ -119,10 +116,7 @@ public class Server extends Panel implements ActionListener {
 
                 } else if (jsonLobby.getInt("id") == this.correspondance.get(this.choice) && jsonLobby.getBoolean("full")) {
 
-                    JOptionPane.showMessageDialog(this,
-                            "Ce lobby est plein !",
-                            "Erreur", 2
-                    );
+                    this.getFrame().showError("Ce lobby est plein !");
 
                 }
             }
