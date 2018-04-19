@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class Server extends Panel implements ActionListener {
 
     private DefaultListModel listLobbiesModel;
-    private JList<String> listLobbies;
+    private JList listLobbies;
 
     private JLabel pseudoServer, nbClientServer;
     private JButton btnCreate, btnJoin;
@@ -22,7 +22,7 @@ public class Server extends Panel implements ActionListener {
     private ArrayList<Integer> correspondance;
     private int choice;
 
-    public Server(Client client, Frame frame) {
+    Server(Client client, Frame frame) {
 
         super(client, frame);
         this.setLayout(null);
@@ -92,7 +92,7 @@ public class Server extends Panel implements ActionListener {
 
             String inputName = JOptionPane.showInputDialog(this,
                     "Entrer le nom de votre lobby :",
-                    "Création Lobby", 3);
+                    "Création Lobby", JOptionPane.QUESTION_MESSAGE);
 
             if (!inputName.equals("")) {
 

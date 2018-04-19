@@ -9,7 +9,7 @@ public abstract class Panel extends JPanel {
     private Client client;
     private Frame frame;
 
-    public Panel(Client client, Frame frame) {
+    Panel(Client client, Frame frame) {
         this.client = client;
         this.frame = frame;
     }

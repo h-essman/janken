@@ -18,8 +18,6 @@ import java.util.Scanner;
 
 public class Server {
 
-    private String name = "hesserver";
-
     private ArrayList<Player> players;
     private ArrayList<Lobby> lobbies;
 
@@ -66,7 +64,7 @@ public class Server {
 
     }
 
-    public void createLobby(String name, Player player) {
+    void createLobby(String name, Player player) {
 
         Lobby lobby = new Lobby(name, player, this);
         player.setStatus("creator");
@@ -79,13 +77,13 @@ public class Server {
 
     }
 
-    public void removeLobby(Lobby lobby) {
+    void removeLobby(Lobby lobby) {
         String message = "Suppression du lobby " + lobby.getName() + " ID " + lobby.getId();
         this.lobbies.remove(lobby);
         System.out.println(message);
     }
 
-    public boolean joinLobby(int id, Player player) {
+    boolean joinLobby(int id, Player player) {
         for (Lobby lobby : lobbies) {
             if (id == lobby.getId() && !lobby.isFull()) {
                 player.setStatus("opponent");
@@ -102,7 +100,7 @@ public class Server {
         return false;
     }
 
-    public JSONArray getLobbies() {
+    JSONArray getLobbies() {
         JSONArray jsonLobbies = new JSONArray();
         for (Lobby lobby : this.lobbies) {
             JSONObject jsonLobby = new JSONObject();
@@ -115,7 +113,7 @@ public class Server {
         return jsonLobbies;
     }
 
-    public JSONArray getLobbyPlayers(Player player){
+    JSONArray getLobbyPlayers(Player player){
         JSONArray jsonPlayers = new JSONArray();
         Lobby lobby = player.getLobby();
         for (Player p : lobby.getPlayers()) {
@@ -128,53 +126,42 @@ public class Server {
         return jsonPlayers;
     }
 
-    public int giveIdClient(Player player) {
+    void giveIdClient(Player player) {
         this.lastIdClient++;
         player.setId(this.lastIdClient);
-        return this.lastIdClient;
     }
 
-    public int giveIdLobby(Lobby lobby) {
+    private void giveIdLobby(Lobby lobby) {
         this.lastIdlobby++;
         lobby.setId(this.lastIdlobby);
-        return this.lastIdlobby;
     }
 
-    public Lobby getLobbyById(int id){
-        for (Lobby lobby:lobbies){
-            if (lobby.getId() == id){
-                return lobby;
-            }
-        }
-        return null;
-    }
-
-    public void addClient(Player player) {
+    void addClient(Player player) {
         this.players.add(player);
         this.nbClient++;
         System.out.println("Ajout du joueur ID " + player.getId());
     }
 
-    public void removeClient(Player player) {
+    void removeClient(Player player) {
         String message = "Suppression de " + player.getPseudo() + " ID " + player.getId();
         this.nbClient--;
         this.players.remove(player);
         System.out.println(message);
     }
 
-    public String encrypt(String str) throws Exception{
+    String encrypt(String str) throws Exception{
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(this.passphrase, "AES"));
         return Base64.encodeBase64URLSafeString(cipher.doFinal(str.getBytes(Charsets.UTF_8)));
     }
 
-    public String decrypt(String encryptedInput) throws Exception{
+    String decrypt(String encryptedInput) throws Exception{
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(this.passphrase, "AES"));
         return new String(cipher.doFinal(Base64.decodeBase64(encryptedInput)), Charsets.UTF_8);
     }
 
-    public byte[] sha256digest16(String clearpassphrase) throws NoSuchAlgorithmException {
+    private byte[] sha256digest16(String clearpassphrase) throws NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         digest.reset();
         digest.update(clearpassphrase.getBytes(Charsets.UTF_8));
@@ -184,12 +171,8 @@ public class Server {
 
     public int getClient() { return this.nbClient; }
 
-    public String getName() { return name; }
+    String getName() { return "hesserver"; }
 
-    public ArrayList<Lobby> getArrayLobbies() { return this.lobbies; }
-
-    public ArrayList<Player> getArrayPlayers() { return this.players; }
-
-    public boolean isSecure() { return secure; }
+    boolean isSecure() { return secure; }
 
 }

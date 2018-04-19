@@ -8,10 +8,7 @@ import java.awt.event.ActionListener;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import static java.lang.Thread.sleep;
-
 public class Menu extends Panel implements ActionListener {
-
 
     private JButton btnConnexion, btnQuit;
     private JTextField inputHost, inputPseudo, inputPort;
@@ -99,26 +96,17 @@ public class Menu extends Panel implements ActionListener {
                 if (this.checkBoxSecure.isSelected()) {
                     String message = JOptionPane.showInputDialog(this,
                             "Entrer la passphrase :",
-                            "Connexion sécurisée", 3);
-                            if(message != null){
-                                this.getClient().setPassphrase(message);
-                            }else{
-                                return;
-                            }
+                            "Connexion sécurisée", JOptionPane.QUESTION_MESSAGE);
+                    if (message != null) {
+                        this.getClient().setPassphrase(message);
+                    } else {
+                        return;
+                    }
                 }
 
-                if (this.getClient().connexion(inputHost.getText(), Integer.parseInt(inputPort.getText()), inputPseudo.getText(), this.checkBoxSecure.isSelected())) {
-                    try{
-                        sleep(4000);
-                        if(this.getClient().isConnected()){
-                            this.getFrame().goNext("server");
-                        }
-                    }catch (Exception e1){
-                        this.getFrame().goNext("server");
-                    }
-
-                }else{
+                if (!this.getClient().connexion(inputHost.getText(), Integer.parseInt(inputPort.getText()), inputPseudo.getText(), this.checkBoxSecure.isSelected())){
                    this.getFrame().showError("Erreur de connexion...");
+                   //this.resetField();
                 }
             }
         }

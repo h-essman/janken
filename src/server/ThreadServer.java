@@ -25,11 +25,11 @@ public class ThreadServer implements Runnable {
     private String reception, emission;
     private boolean waiting = true;
 
-    private String command = "";
+    private String command = "server";
     private String argument = "";
     private String response = "";
 
-    public ThreadServer(Socket socket, Server server) {
+    ThreadServer(Socket socket, Server server) {
 
         this.socket = socket;
         this.server = server;
@@ -53,7 +53,7 @@ public class ThreadServer implements Runnable {
     public void run() {
 
         while (true) {
-            //System.out.println(this.jsonServer.toString() + "\n" + this.reception);
+            System.out.println(this.jsonServer.toString() + "\n" + this.reception);
             try {
                 sleep(300);
                 if (!this.waiting) {
@@ -142,8 +142,7 @@ public class ThreadServer implements Runnable {
         client.put("server", this.server.getName());
         client.put("clients", this.server.getClient());
         client.put("id", this.player.getId());
-        client.put("command", this.command);
-        client.put("response", this.response);
+
 
         //TODO JSON à envoyer suivant les states
         switch (this.jsonClient.getString("state")){
@@ -159,16 +158,24 @@ public class ThreadServer implements Runnable {
                 break;
         }
 
+        client.put("command", this.command);
+        client.put("argument", this.argument);
+        client.put("response", this.response);
+
         this.command = "";
         this.argument = "";
+        this.response = "";
+
+
         return client;
     }
 
-    public void kill(String error){
+    private void kill(String error){
         System.out.println("Arrêt d'un thread : "+error);
         this.server.removeClient(player);
+        this.player.getLobby().getPlayers().remove(this.player);
         if (player.getStatus().equals("creator")) {
-            this.server.removeLobby(this.player.getLobby());
+            this.player.getLobby().kill();
         }
         try {
             this.socket.close();
@@ -177,4 +184,6 @@ public class ThreadServer implements Runnable {
             System.out.println(e.getMessage());
         }
     }
+
+    public void setCommand(String command) { this.command = command; }
 }

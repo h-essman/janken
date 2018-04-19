@@ -13,22 +13,18 @@ public class Lobby {
     private ArrayList<Player> players;
 
 
-    public Lobby(String name, Player creator, Server server) {
+    Lobby(String name, Player creator, Server server) {
         this.players = new ArrayList<>();
         this.name = name;
         this.creator = creator;
         this.server = server;
     }
 
-    public boolean isFull() {
-        if (this.players.size() < 2){
-            return false;
-        }else{
-            return true;
-        }
+    boolean isFull() {
+        return this.players.size() >= 2;
     }
 
-    public String getName() {
+    String getName() {
         return name;
     }
 
@@ -36,16 +32,19 @@ public class Lobby {
         return players;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    void setId(int id) { this.id = id; }
 
-    public int getId() {
-        return id;
-    }
+    int getId() { return id; }
 
-    public Player getCreator() {
+    Player getCreator() {
         return creator;
+    }
+
+    void kill(){
+        for(Player player:players){
+            player.goServer();
+        }
+        this.server.removeLobby(this);
     }
 
 }

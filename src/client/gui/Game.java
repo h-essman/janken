@@ -3,7 +3,7 @@ package client.gui;
 import client.Client;
 
 public class Game extends Panel {
-    public Game(Client client, Frame frame) {
+    Game(Client client, Frame frame) {
         super(client, frame);
     }
 

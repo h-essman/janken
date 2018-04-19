@@ -23,7 +23,6 @@ public class Client {
 
     private byte[] passphrase;
     private boolean secure;
-    private boolean connected = false;
 
     public Client(Frame frame) {
         this.frame = frame;
@@ -46,7 +45,7 @@ public class Client {
         }
     }
 
-    public String encrypt(String str) throws Exception {
+    String encrypt(String str) throws Exception {
 
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(this.passphrase, "AES"));
@@ -55,7 +54,7 @@ public class Client {
 
     }
 
-    public String decrypt(String encryptedInput) throws Exception {
+    String decrypt(String encryptedInput) throws Exception {
 
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(this.passphrase, "AES"));
@@ -85,37 +84,32 @@ public class Client {
 
     }
 
-    public String getPseudo() { return this.pseudo; }
-
-    public void setPseudo(String pseudo) { this.pseudo = pseudo; }
+    String getPseudo() { return this.pseudo; }
 
     public String getState() { return state; }
 
     public void setState(String state) { this.state = state; }
 
-    public String getCommand() { return command; }
+    String getCommand() { return command; }
 
     public void setCommand(String commande) { this.command = commande; }
 
-    public int getId() { return id; }
+    int getId() { return id; }
 
-    public void setId(int id) { this.id = id; }
+    void setId(int id) { this.id = id; }
 
-    public void setJsonServer(JSONObject jsonServer) { this.jsonServer = jsonServer; }
+    void setJsonServer(JSONObject jsonServer) { this.jsonServer = jsonServer; }
 
     public JSONObject getJsonServer() { return this.jsonServer; }
 
-    public Object getArgument() { return argument; }
+    Object getArgument() { return argument; }
 
     public void setArgument(String argument) { this.argument = argument; }
 
     public void setArgument(int argument) { this.argument = argument; }
 
-    public boolean isSecure() { return secure; }
+    boolean isSecure() { return secure; }
 
-    public void goNext(String state){ this.frame.goNext(state);}
+    void goNext(String state){ this.frame.goNext(state);}
 
-    public boolean isConnected(){ return this.connected; }
-
-    public void setConnected(boolean connected){ this.connected = connected; }
 }

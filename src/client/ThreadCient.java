@@ -8,7 +8,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-import static java.lang.Thread.getDefaultUncaughtExceptionHandler;
 import static java.lang.Thread.sleep;
 
 public class ThreadCient implements Runnable {
@@ -25,7 +24,7 @@ public class ThreadCient implements Runnable {
     private String reception, emission;
     private boolean waiting = true;
 
-    public ThreadCient(String host, int port, Client client, Frame frame) throws Exception {
+    ThreadCient(String host, int port, Client client, Frame frame) throws Exception {
 
         this.frame = frame;
         this.client = client;
@@ -42,9 +41,8 @@ public class ThreadCient implements Runnable {
     }
 
     public void run() {
-        this.client.setConnected(true);
         while (true) {
-            //System.out.println(this.jsonClient.toString() + "\n" + this.reception);
+            System.out.println(this.jsonClient.toString() + "\n" + this.reception);
             try {
                 sleep(200);
                 if (!this.waiting) {
@@ -93,6 +91,9 @@ public class ThreadCient implements Runnable {
                 case "create":
                     this.client.goNext("lobby");
                     break;
+                case "server":
+                    this.frame.goNext("server");
+                    break;
             }
 
             this.jsonClient = formJSON();
@@ -125,8 +126,7 @@ public class ThreadCient implements Runnable {
         return client;
     }
 
-    public void kill(String error){
-        this.client.setConnected(false);
+    private void kill(String error){
         this.client.goNext("menu");
         this.frame.showError("Vous avez été déconnecté du serveur !");
         try {

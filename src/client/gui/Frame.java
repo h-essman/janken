@@ -98,6 +98,6 @@ public class Frame extends JFrame {
     public void showError(String message) {
         JOptionPane.showMessageDialog(this,
                 message,
-                "Erreur", 2);
+                "Erreur", JOptionPane.WARNING_MESSAGE);
     }
 }

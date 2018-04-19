@@ -1,7 +1,6 @@
 package server.game;
 
 import server.Lobby;
-import server.Server;
 import server.ThreadServer;
 
 public class Player {
@@ -53,4 +52,5 @@ public class Player {
         return lobby;
     }
 
+    public void goServer(){this.threadServer.setCommand("server");}
 }
