@@ -173,7 +173,9 @@ public class ThreadServer implements Runnable {
     private void kill(String error){
         System.out.println("Arrêt d'un thread : "+error);
         this.server.removeClient(player);
-        this.player.getLobby().getPlayers().remove(this.player);
+        if(!player.getStatus().equals("new")) {
+            this.player.getLobby().getPlayers().remove(this.player);
+        }
         if (player.getStatus().equals("creator")) {
             this.player.getLobby().kill();
         }
