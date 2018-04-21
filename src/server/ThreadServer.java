@@ -1,7 +1,6 @@
 package server;
 
 import org.json.JSONObject;
-import server.game.Player;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,7 +26,6 @@ public class ThreadServer implements Runnable {
 
     private String command = "server";
     private String argument = "";
-    private String response = "";
 
     ThreadServer(Socket socket, Server server) {
 
@@ -101,7 +99,7 @@ public class ThreadServer implements Runnable {
 
                         case "join":
                             this.command = "join";
-                            this.response = this.server.joinLobby(this.jsonClient.getInt("argument"), this.player) ? "ok" : "ko";
+                            this.argument = this.server.joinLobby(this.jsonClient.getInt("argument"), this.player) ? "ok" : "ko";
                             break;
                     }
                     break;
@@ -110,15 +108,20 @@ public class ThreadServer implements Runnable {
                     //ready or not
                     try {
                         switch (this.jsonClient.getString("command")) {
-                            case "launch": //if all ready and player creator
+                            case "launch":
                                 break;
                             case "ready":
-                                break;
-                            case "notready":
+                                if(this.jsonClient.getString("argument").equals("ok")){
+                                    this.player.setReady(true);
+                                    this.command = "ready";
+                                    this.argument = "ok";
+                                }else {
+                                    this.player.setReady(false);
+                                    this.command = "ready";
+                                    this.argument = "ko";
+                                }
                                 break;
                             case "quit":
-                                break;
-                            default:
                                 break;
                         }
                     }catch (Exception e){
@@ -151,6 +154,8 @@ public class ThreadServer implements Runnable {
                 break;
 
             case "lobby":
+                client.put("lobby", this.player.getLobby().getName());
+                client.put("launchable", this.player.getLobby().isLaunchable());
                 client.put("players", this.server.getLobbyPlayers(this.player));
                 break;
 
@@ -160,11 +165,9 @@ public class ThreadServer implements Runnable {
 
         client.put("command", this.command);
         client.put("argument", this.argument);
-        client.put("response", this.response);
 
         this.command = "";
         this.argument = "";
-        this.response = "";
 
 
         return client;
@@ -173,12 +176,7 @@ public class ThreadServer implements Runnable {
     private void kill(String error){
         System.out.println("Arrêt d'un thread : "+error);
         this.server.removeClient(player);
-        if(!player.getStatus().equals("new")) {
-            this.player.getLobby().getPlayers().remove(this.player);
-        }
-        if (player.getStatus().equals("creator")) {
-            this.player.getLobby().kill();
-        }
+        this.player.quitLobby();
         try {
             this.socket.close();
             System.out.println("Socket fermé");
@@ -187,5 +185,5 @@ public class ThreadServer implements Runnable {
         }
     }
 
-    public void setCommand(String command) { this.command = command; }
+    void setCommand(String command) { this.command = command; }
 }

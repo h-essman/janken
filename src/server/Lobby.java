@@ -1,10 +1,8 @@
 package server;
 
-import server.game.Player;
-
 import java.util.ArrayList;
 
-public class Lobby {
+class Lobby {
 
     private String name;
     private Server server;
@@ -24,12 +22,17 @@ public class Lobby {
         return this.players.size() >= 2;
     }
 
-    String getName() {
-        return name;
+    boolean isLaunchable() {
+        for(Player player:players){
+            if(!player.isReady()){
+                return false;
+            }
+        }
+        return isFull();
     }
 
-    public ArrayList<Player> getPlayers() {
-        return players;
+    String getName() {
+        return name;
     }
 
     void setId(int id) { this.id = id; }
@@ -46,5 +49,7 @@ public class Lobby {
         }
         this.server.removeLobby(this);
     }
+
+    ArrayList<Player> getPlayers() { return players; }
 
 }

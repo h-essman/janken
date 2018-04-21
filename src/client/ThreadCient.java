@@ -82,17 +82,26 @@ public class ThreadCient implements Runnable {
 
             switch (this.jsonServer.getString("command")){
                 case "join":
-                    if(this.jsonServer.getString("response").equals("ok")){
+                    if(this.jsonServer.getString("argument").equals("ok")){
+                        this.client.setStatus("opponent");
                         this.client.goNext("lobby");
                     }else{
                         this.frame.showError("Impossible de rejoindre ce lobby...");
                     }
                     break;
                 case "create":
+                    this.client.setStatus("creator");
                     this.client.goNext("lobby");
                     break;
                 case "server":
                     this.frame.goNext("server");
+                    break;
+                case "ready":
+                    if(this.jsonServer.getString("argument").equals("ok")){
+                        this.client.setReady(true);
+                    }else{
+                        this.client.setReady(false);
+                    }
                     break;
             }
 

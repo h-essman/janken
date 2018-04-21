@@ -4,7 +4,6 @@ import com.google.common.base.Charsets;
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import server.game.Player;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -64,6 +63,19 @@ public class Server {
 
     }
 
+    private byte[] sha256digest16(String clearpassphrase) throws NoSuchAlgorithmException {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        digest.reset();
+        digest.update(clearpassphrase.getBytes(Charsets.UTF_8));
+        byte[] sha256 = digest.digest();
+        return Arrays.copyOf(sha256, 16);
+    }
+
+    private void giveIdLobby(Lobby lobby) {
+        this.lastIdlobby++;
+        lobby.setId(this.lastIdlobby);
+    }
+
     void createLobby(String name, Player player) {
 
         Lobby lobby = new Lobby(name, player, this);
@@ -121,6 +133,7 @@ public class Server {
             jsonPlayer.put("pseudo", p.getPseudo());
             jsonPlayer.put("id", p.getId());
             jsonPlayer.put("status", p.getStatus());
+            jsonPlayer.put("ready", p.isReady());
             jsonPlayers.put(jsonPlayer);
         }
         return jsonPlayers;
@@ -129,11 +142,6 @@ public class Server {
     void giveIdClient(Player player) {
         this.lastIdClient++;
         player.setId(this.lastIdClient);
-    }
-
-    private void giveIdLobby(Lobby lobby) {
-        this.lastIdlobby++;
-        lobby.setId(this.lastIdlobby);
     }
 
     void addClient(Player player) {
@@ -161,18 +169,10 @@ public class Server {
         return new String(cipher.doFinal(Base64.decodeBase64(encryptedInput)), Charsets.UTF_8);
     }
 
-    private byte[] sha256digest16(String clearpassphrase) throws NoSuchAlgorithmException {
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        digest.reset();
-        digest.update(clearpassphrase.getBytes(Charsets.UTF_8));
-        byte[] sha256 = digest.digest();
-        return Arrays.copyOf(sha256, 16);
-    }
-
-    public int getClient() { return this.nbClient; }
-
     String getName() { return "hesserver"; }
 
     boolean isSecure() { return secure; }
+
+    int getClient() { return this.nbClient; }
 
 }

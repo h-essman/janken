@@ -55,12 +55,11 @@ public class Frame extends JFrame {
                 this.setSize(440, 350);
                 this.cardLayout.show(this.panel, "server");
                 this.client.setState("server");
-
                 break;
 
             case "lobby":
                 this.setTitle("Janken - LOBBY");
-                this.setSize(440, 400);
+                this.setSize(330, 170);
                 this.cardLayout.show(this.panel, "lobby");
                 this.client.setState("lobby");
                 break;

@@ -14,7 +14,7 @@ import java.util.Arrays;
 
 public class Client {
 
-    private String pseudo, state, command;
+    private String pseudo, state, command, status;
     private Object argument;
     private int id;
 
@@ -22,7 +22,7 @@ public class Client {
     private JSONObject jsonServer;
 
     private byte[] passphrase;
-    private boolean secure;
+    private boolean secure, ready;
 
     public Client(Frame frame) {
         this.frame = frame;
@@ -112,4 +112,11 @@ public class Client {
 
     void goNext(String state){ this.frame.goNext(state);}
 
+    public boolean isReady() { return ready; }
+
+    void setReady(boolean ready) { this.ready = ready; }
+
+    void setStatus(String status) { this.status = status; }
+
+    public String getStatus() { return status; }
 }
