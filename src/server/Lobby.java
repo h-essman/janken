@@ -11,7 +11,7 @@ class Lobby {
     private Server server;
     private int id;
     private Player creator;
-    private boolean inGame;
+    private boolean inGame = false;
     private ArrayList<Player> players;
     private Game game;
 

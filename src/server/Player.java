@@ -80,10 +80,11 @@ public class Player {
 
         if(!this.status.equals("new")) {
             this.lobby.getPlayers().remove(this);
+            if(this.lobby.isInGame()){
+                this.lobby.getGame().quitGame();
+            }
         }
-        if(this.lobby.isInGame()){
-            this.lobby.getGame().quitGame();
-        }
+
         if (this.status.equals("creator")) {
             this.lobby.kill();
         }
