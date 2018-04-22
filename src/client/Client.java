@@ -36,12 +36,13 @@ public class Client {
             this.command = "";
             this.secure = secure;
             this.player = new Player(pseudo);
-
+            this.frame.goPanel("connexion");
             new Thread(new ThreadCient(host, port, this, this.frame, this.player)).start();
 
             return true;
         } catch (Exception e) {
             System.out.println("Echec de la connexion : "+e.getMessage());
+            this.frame.goPanel("menu");
             return false;
         }
     }

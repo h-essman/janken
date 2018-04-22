@@ -44,7 +44,6 @@ public class ThreadCient implements Runnable {
 
     public void run() {
         while (true) {
-            System.out.println(this.jsonClient.toString() + "\n" + this.reception);
             try {
                 sleep(200);
                 if (!this.waiting) {
@@ -68,6 +67,7 @@ public class ThreadCient implements Runnable {
                 this.kill(e.getMessage());
                 break;
             }
+            //System.out.println(this.reception + "\n" + this.jsonClient.toString());
         }
     }
 

@@ -51,7 +51,6 @@ public class ThreadServer implements Runnable {
     public void run() {
 
         while (true) {
-            System.out.println(this.jsonServer.toString() + "\n" + this.reception);
             try {
                 sleep(300);
                 if (!this.waiting) {
@@ -75,6 +74,7 @@ public class ThreadServer implements Runnable {
                 this.kill(e.getMessage());
                 break;
             }
+            //System.out.println(this.reception + "\n" + this.jsonServer.toString());
         }
     }
 
@@ -85,8 +85,6 @@ public class ThreadServer implements Runnable {
             }
             this.jsonClient = new JSONObject(reception);
             this.player.setPseudo(this.jsonClient.getString("pseudo"));
-
-            //TODO Execution command + réponse bool
 
             switch (this.jsonClient.getString("state")){
 
@@ -166,7 +164,7 @@ public class ThreadServer implements Runnable {
             this.emission = this.server.isSecure() ? this.server.encrypt(this.jsonServer.toString()) : this.jsonServer.toString();
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             return false;
         }
     }

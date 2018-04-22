@@ -69,6 +69,12 @@ public class Lobby extends Panel implements ActionListener {
     public void refresh() {
         this.nameLobby.setText(this.getClient().getJsonServer().getString("lobby"));
 
+        if(this.getClient().getPlayer().isReady()){
+            this.btnReady.setBackground(Color.green);
+        }else {
+            this.btnReady.setBackground(Color.red);
+        }
+
         if(this.getClient().getPlayer().getStatus().equals("creator") && this.getClient().getJsonServer().getBoolean("launchable")){
             this.btnLaunch.setVisible(true);
         }else{
@@ -106,18 +112,15 @@ public class Lobby extends Panel implements ActionListener {
 
         if(e.getSource() == this.btnReady) {
             if(this.getClient().getPlayer().isReady()){
-                this.btnReady.setBackground(Color.red);
                 this.getClient().setCommand("ready");
                 this.getClient().setArgument("ko");
             }else{
-                this.btnReady.setBackground(Color.green);
                 this.getClient().setCommand("ready");
                 this.getClient().setArgument("ok");
             }
         }
 
         if(e.getSource() == this.btnQuit) {
-            this.btnReady.setBackground(Color.red);
             this.getClient().setCommand("quit");
         }
 

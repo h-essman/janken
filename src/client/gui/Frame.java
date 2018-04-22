@@ -11,9 +11,11 @@ public class Frame extends JFrame {
     private JPanel panel = new JPanel();
     private Client client;
     private Menu menu;
+    private Connexion connexion;
     private Server server;
     private Lobby lobby;
     private Game game;
+    private Result result;
 
     public Frame() {
 
@@ -23,15 +25,19 @@ public class Frame extends JFrame {
         this.client = new Client(this);
 
         this.menu = new Menu(client, this);
+        this.connexion = new Connexion(client, this);
         this.server = new Server(client, this);
         this.lobby = new Lobby(client, this);
         this.game = new Game(client, this);
+        this.result = new Result(client, this);
 
         panel.setLayout(cardLayout);
         panel.add(this.menu, "menu");
+        panel.add(this.connexion, "connexion");
         panel.add(this.server, "server");
         panel.add(this.lobby, "lobby");
         panel.add(this.game, "game");
+        panel.add(this.result, "result");
         this.getContentPane().add(panel, BorderLayout.CENTER);
         this.setVisible(true);
 
@@ -44,31 +50,44 @@ public class Frame extends JFrame {
         switch (stage) {
 
             case "menu":
-                this.setTitle("Janken - MENU");
+                this.setTitle("Janken");
                 this.setSize(440, 250);
                 this.cardLayout.show(this.panel, "menu");
                 this.client.setState("menu");
                 break;
 
+            case "connexion":
+                this.setTitle("Janken");
+                this.setSize(100, 50);
+                this.cardLayout.show(this.panel, "connexion");
+                break;
+
             case "server":
-                this.setTitle("Janken - SERVER");
+                this.setTitle("Janken");
                 this.setSize(440, 350);
                 this.cardLayout.show(this.panel, "server");
                 this.client.setState("server");
                 break;
 
             case "lobby":
-                this.setTitle("Janken - LOBBY");
+                this.setTitle("Janken");
                 this.setSize(330, 170);
                 this.cardLayout.show(this.panel, "lobby");
                 this.client.setState("lobby");
                 break;
 
             case "game":
-                this.setTitle("Janken - GAME");
+                this.setTitle("Janken");
                 this.setSize(600, 600);
                 this.cardLayout.show(this.panel, "game");
                 this.client.setState("game");
+                break;
+
+            case "result":
+                this.setTitle("Janken");
+                this.setSize(600, 600);
+                this.cardLayout.show(this.panel, "result");
+                this.client.setState("result");
                 break;
 
         }

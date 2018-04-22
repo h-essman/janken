@@ -88,6 +88,7 @@ public class Game {
             for(Player player:players) {
                 player.setChoice(0);
                 player.setScore(0);
+                player.setReady(false);
                 player.setCommand("quit");
                 player.setArgument("lobby");
             }
