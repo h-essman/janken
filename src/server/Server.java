@@ -50,17 +50,14 @@ public class Server {
         try {
             ServerSocket server = new ServerSocket(port);
             System.out.println("Serveur à l'écoute...");
-
             while (true) {
                 Socket socket = server.accept();
                 System.out.println("Nouveau client est connecté !");
                 new Thread(new ThreadServer(socket, this)).start();
             }
-
         } catch (Exception e) {
             System.out.println("Déconnexion d'un client...");
         }
-
     }
 
     private byte[] sha256digest16(String clearpassphrase) throws NoSuchAlgorithmException {
@@ -77,13 +74,11 @@ public class Server {
     }
 
     void createLobby(String name, Player player) {
-
         Lobby lobby = new Lobby(name, player, this);
         player.setStatus("creator");
         player.setLobby(lobby);
         giveIdLobby(lobby);
         this.lobbies.add(lobby);
-
         System.out.println("Création du lobby " + lobby.getName() + " ID " + lobby.getId() +
                 " par " + player.getPseudo() + " ID " + player.getId());
 

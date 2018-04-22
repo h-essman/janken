@@ -23,10 +23,6 @@ class Lobby {
         this.server = server;
     }
 
-    boolean isFull() {
-        return this.players.size() >= 2;
-    }
-
     boolean isLaunchable() {
         for(Player player:players){
             if(!player.isReady()){
@@ -36,18 +32,6 @@ class Lobby {
         return isFull();
     }
 
-    String getName() {
-        return name;
-    }
-
-    void setId(int id) { this.id = id; }
-
-    int getId() { return id; }
-
-    Player getCreator() {
-        return creator;
-    }
-
     void kill(){
         for(Player player:players){
             player.goServer();
@@ -55,11 +39,7 @@ class Lobby {
         this.server.removeLobby(this);
     }
 
-    ArrayList<Player> getPlayers() { return players; }
-
-    public void setInGame(boolean inGame) { this.inGame = inGame; }
-
-    public void newGame() {
+    void newGame() {
         this.game = new Game(this);
         this.inGame = true;
     }
@@ -78,11 +58,31 @@ class Lobby {
         return jsonPlayers;
     }
 
-    public boolean isInGame() {
+    boolean isInGame() {
         return inGame;
     }
 
-    public Game getGame() {
+    Game getGame() {
         return game;
+    }
+
+    String getName() {
+        return name;
+    }
+
+    void setId(int id) { this.id = id; }
+
+    int getId() { return id; }
+
+    Player getCreator() {
+        return creator;
+    }
+
+    ArrayList<Player> getPlayers() { return players; }
+
+    void setInGame(boolean inGame) { this.inGame = inGame; }
+
+    boolean isFull() {
+        return this.players.size() >= 2;
     }
 }

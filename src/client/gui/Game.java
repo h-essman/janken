@@ -9,7 +9,7 @@ public class Game extends Panel {
 
         //TODO commande choice argument 1(P) 2(F) ou 3(C)
         //TODO if wait afficher wait if end afficher end + score + win/loose
-        //TODO bouton quitter, bouton nouvelle partie
+
     }
 
     @Override

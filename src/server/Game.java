@@ -1,10 +1,8 @@
 package server;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import java.util.ArrayList;
 
-public class Game {
+class Game {
 
         private ArrayList<Player> players;
         private Lobby lobby;
@@ -41,19 +39,6 @@ public class Game {
             return null;
         }
 
-        JSONArray getPlayers(){
-            JSONArray jsonPlayers = new JSONArray();
-            for (Player player : players) {
-                JSONObject jsonPlayer = new JSONObject();
-                jsonPlayer.put("pseudo", player.getPseudo());
-                jsonPlayer.put("id", player.getId());
-                jsonPlayer.put("status", player.getStatus());
-
-                jsonPlayers.put(jsonPlayer);
-            }
-            return jsonPlayers;
-        }
-
         boolean done(){
             for(Player player:players){
                 if(player.getChoice() == 0){
@@ -63,10 +48,11 @@ public class Game {
             return true;
         }
 
-        void launchGame(){
+        private void launchGame(){
             for(Player player:this.players){
                 player.setCommand("game");
             }
+            this.lobby.setInGame(true);
         }
 
         void endGame(Player winner){

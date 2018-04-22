@@ -20,6 +20,21 @@ public class Player {
         lobby.getPlayers().add(this);
     }
 
+    void quitLobby(){
+
+        if(!this.status.equals("new")) {
+            this.lobby.getPlayers().remove(this);
+            if(this.lobby.isInGame()){
+                this.lobby.getGame().quitGame();
+            }
+        }
+
+        if (this.status.equals("creator")) {
+            this.lobby.kill();
+        }
+
+    }
+
     String getPseudo() {
         return this.pseudo;
     }
@@ -54,48 +69,21 @@ public class Player {
 
     boolean isReady() { return ready; }
 
-    public int getChoice() { return choice; }
+    int getChoice() { return choice; }
 
     void setReady(boolean ready) { this.ready = ready; }
 
     void goServer(){this.threadServer.setCommand("server");}
 
-    public void setChoice(int choice) {
-        this.choice = choice;
-    }
+    void setChoice(int choice) { this.choice = choice; }
 
-    public int getScore() {
-        return score;
-    }
+    int getScore() { return score; }
 
-    public void incrScore() {
-        this.score ++;
-    }
+    void incrScore() { this.score ++; }
 
-    public void setScore(int score) {
-        this.score = score;
-    }
+    void setScore(int score) { this.score = score; }
 
-    public void quitLobby(){
+    void setCommand(String command){ this.threadServer.setCommand(command); }
 
-        if(!this.status.equals("new")) {
-            this.lobby.getPlayers().remove(this);
-            if(this.lobby.isInGame()){
-                this.lobby.getGame().quitGame();
-            }
-        }
-
-        if (this.status.equals("creator")) {
-            this.lobby.kill();
-        }
-
-    }
-
-    void setCommand(String command){
-        this.threadServer.setCommand(command);
-    }
-
-    void setArgument(Object argument){
-        this.threadServer.setArgument(argument);
-    }
+    void setArgument(Object argument){ this.threadServer.setArgument(argument); }
 }

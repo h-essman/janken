@@ -49,7 +49,6 @@ public class ThreadServer implements Runnable {
     }
 
     public void run() {
-
         while (true) {
             try {
                 sleep(300);
@@ -90,6 +89,7 @@ public class ThreadServer implements Runnable {
 
                 case "server":
                     switch (this.jsonClient.getString("command")) {
+
                         case "create":
                             this.server.createLobby(this.jsonClient.getString("argument"), this.player);
                             this.command = "create";
@@ -104,9 +104,11 @@ public class ThreadServer implements Runnable {
 
                 case "lobby":
                     switch (this.jsonClient.getString("command")) {
+
                         case "game":
                             this.player.getLobby().newGame();
                             break;
+
                         case "ready":
                             if (this.jsonClient.getString("argument").equals("ok")) {
                                 this.player.setReady(true);
@@ -118,6 +120,7 @@ public class ThreadServer implements Runnable {
                                 this.argument = "ko";
                             }
                             break;
+
                         case "quit":
                             this.player.setReady(false);
                             this.player.quitLobby();
@@ -129,6 +132,7 @@ public class ThreadServer implements Runnable {
 
                 case "game":
                     switch (this.jsonClient.getString("command")) {
+
                         case "choice":
                             this.player.setChoice(this.jsonClient.getInt("argument"));
                             if(this.player.getLobby().getGame().done()){
@@ -137,6 +141,7 @@ public class ThreadServer implements Runnable {
                                 this.command = "wait";
                             }
                             break;
+
                         case "quit":
                             this.player.setReady(false);
                             this.player.getLobby().getGame().quitGame();
@@ -145,6 +150,7 @@ public class ThreadServer implements Runnable {
                     break;
                 case "result":
                     switch (this.jsonClient.getString("command")) {
+
                         case "continue":
                             this.player.setReady(true);
                             if(this.player.getLobby().getGame().ready()){
@@ -153,6 +159,7 @@ public class ThreadServer implements Runnable {
                                 this.command = "wait";
                             }
                             break;
+
                         case "quit":
                             this.player.setReady(false);
                             this.player.getLobby().getGame().quitGame();
@@ -176,6 +183,7 @@ public class ThreadServer implements Runnable {
         client.put("id", this.player.getId());
 
         switch (this.jsonClient.getString("state")){
+
             case "server":
                 client.put("lobbies", this.server.getLobbies());
                 break;

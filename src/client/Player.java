@@ -4,7 +4,6 @@ public class Player {
 
     private String pseudo, status, gameResult;
     private boolean ready, waiting;
-    private ThreadCient threadCient;
     private int id, score;
 
     Player(String pseudo){

@@ -17,7 +17,7 @@ public class Menu extends Panel implements ActionListener {
 
     private String hostname, ipadress;
 
-    public Menu(Client client, Frame frame) {
+    Menu(Client client, Frame frame) {
 
         super(client, frame);
 

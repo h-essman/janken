@@ -80,12 +80,11 @@ public class ThreadCient implements Runnable {
             this.client.setJsonServer(this.jsonServer);
             this.player.setId(this.jsonServer.getInt("id"));
 
-            //TODO gestion des réponses du serveur aux commandes
-
             switch (this.jsonServer.getString("command")){
                 case "server":
                     this.frame.goPanel("server");
                     break;
+
                 case "join":
                     if(this.jsonServer.getString("argument").equals("ok")){
                         this.player.setStatus("opponent");
@@ -94,10 +93,12 @@ public class ThreadCient implements Runnable {
                         this.frame.showError("Impossible de rejoindre ce lobby...");
                     }
                     break;
+
                 case "create":
                     this.player.setStatus("creator");
                     this.frame.goPanel("lobby");
                     break;
+
                 case "ready":
                     if(this.jsonServer.getString("argument").equals("ok")){
                         this.player.setReady(true);
@@ -105,15 +106,19 @@ public class ThreadCient implements Runnable {
                         this.player.setReady(false);
                     }
                     break;
+
                 case "game":
                     this.frame.goPanel("game");
                     break;
+
                 case "wait":
                     this.player.setWaiting(true);
                     break;
+
                 case "end":
                     this.player.setWaiting(false);
                     switch (this.jsonServer.getString("argument")){
+
                         case "win":
                             for(Object player:jsonServer.getJSONArray("players")){
                                 JSONObject jsonPlayer = (JSONObject) player;
@@ -124,37 +129,49 @@ public class ThreadCient implements Runnable {
                                 }
                             }
                             break;
+
                         case "loose":
                             this.player.setGameResult("loose");
                             this.frame.goPanel("result");
                             break;
+
                         case "equality":
                             this.player.setGameResult("equality");
                             this.frame.goPanel("result");
                             break;
                     }
                     break;
+
                 case "quit":
                     this.player.setReady(false);
-                    if(this.jsonServer.getString("argument").equals("server")){
-                        this.frame.goPanel("server");
-                    }else if(this.jsonServer.getString("argument").equals("lobby")) {
-                        this.player.setScore(0);
-                        this.player.setGameResult("none");
-                        this.frame.goPanel("lobby");
-                    }else if(this.jsonServer.getString("argument").equals("menu")){
-                        this.kill("retour au menu");
+                    switch (this.jsonServer.getString("argument")) {
+
+                        case "server":
+                            this.frame.goPanel("server");
+                            break;
+
+                        case "lobby":
+                            this.player.setScore(0);
+                            this.player.setGameResult("none");
+                            this.frame.goPanel("lobby");
+                            break;
+
+                        case "menu":
+                            this.kill("retour au menu");
+                            break;
                     }
                     break;
             }
 
             this.jsonClient = formJSON();
             this.emission = this.client.isSecure() ? this.client.encrypt(this.jsonClient.toString()) : this.jsonClient.toString();
+
             try {
                 this.frame.getPanel().refresh();
             }catch (Exception e){
                 System.out.println("Attente de la synchronisation : "+e.getMessage());
             }
+
             return true;
         } catch (Exception e) {
             System.out.println("Problème execution : "+e.getMessage());
@@ -164,18 +181,14 @@ public class ThreadCient implements Runnable {
 
     private JSONObject formJSON() {
         JSONObject client = new JSONObject();
-
         client.put("pseudo", this.player.getPseudo());
         client.put("id", this.player.getId());
-
         client.put("state", this.client.getState());
         client.put("command", this.client.getCommand());
         client.put("argument", this.client.getArgument());
-
         if(this.client.getState().equals("game")){
             client.put("score", this.player.getScore());
         }
-
         this.client.setCommand("");
         this.client.setArgument("");
         return client;
