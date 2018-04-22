@@ -25,7 +25,7 @@ public class ThreadServer implements Runnable {
     private boolean waiting = true;
 
     private String command = "server";
-    private String argument = "";
+    private Object argument = "";
 
     ThreadServer(Socket socket, Server server) {
 
@@ -105,37 +105,68 @@ public class ThreadServer implements Runnable {
                     break;
 
                 case "lobby":
-                    //ready or not
-                    try {
-                        switch (this.jsonClient.getString("command")) {
-                            case "launch":
-                                break;
-                            case "ready":
-                                if(this.jsonClient.getString("argument").equals("ok")){
-                                    this.player.setReady(true);
-                                    this.command = "ready";
-                                    this.argument = "ok";
-                                }else {
-                                    this.player.setReady(false);
-                                    this.command = "ready";
-                                    this.argument = "ko";
-                                }
-                                break;
-                            case "quit":
-                                break;
+                    switch (this.jsonClient.getString("command")) {
+                        case "game":
+                            this.player.getLobby().newGame();
+                            break;
+                        case "ready":
+                            if (this.jsonClient.getString("argument").equals("ok")) {
+                                this.player.setReady(true);
+                                this.command = "ready";
+                                this.argument = "ok";
+                            } else {
+                                this.player.setReady(false);
+                                this.command = "ready";
+                                this.argument = "ko";
+                            }
+                            break;
+                        case "quit":
+                            this.player.setReady(false);
+                            this.player.quitLobby();
+                            this.command = "quit";
+                            this.argument = "server";
+                            break;
                         }
-                    }catch (Exception e){
-                        System.out.println(e.getMessage());
-                    }
                     break;
 
                 case "game":
+                    switch (this.jsonClient.getString("command")) {
+                        case "choice":
+                            this.player.setChoice(this.jsonClient.getInt("argument"));
+                            if(this.player.getLobby().getGame().done()){
+                                this.player.getLobby().getGame().endGame(this.player.getLobby().getGame().winner());
+                            }else{
+                                this.command = "wait";
+                            }
+                            break;
+                        case "quit":
+                            this.player.setReady(false);
+                            this.player.getLobby().getGame().quitGame();
+                            break;
+                    }
+                    break;
+                case "result":
+                    switch (this.jsonClient.getString("command")) {
+                        case "continue":
+                            this.player.setReady(true);
+                            if(this.player.getLobby().getGame().ready()){
+                                this.command = "game";
+                            }else{
+                                this.command = "wait";
+                            }
+                            break;
+                        case "quit":
+                            this.player.setReady(false);
+                            this.player.getLobby().getGame().quitGame();
+                            break;
+                    }
                     break;
             }
             this.jsonServer = this.formJSON();
             this.emission = this.server.isSecure() ? this.server.encrypt(this.jsonServer.toString()) : this.jsonServer.toString();
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -146,8 +177,6 @@ public class ThreadServer implements Runnable {
         client.put("clients", this.server.getClient());
         client.put("id", this.player.getId());
 
-
-        //TODO JSON à envoyer suivant les states
         switch (this.jsonClient.getString("state")){
             case "server":
                 client.put("lobbies", this.server.getLobbies());
@@ -156,10 +185,11 @@ public class ThreadServer implements Runnable {
             case "lobby":
                 client.put("lobby", this.player.getLobby().getName());
                 client.put("launchable", this.player.getLobby().isLaunchable());
-                client.put("players", this.server.getLobbyPlayers(this.player));
+                client.put("players", this.player.getLobby().getJSONArrayPlayers());
                 break;
 
             case "game":
+                client.put("players", this.player.getLobby().getJSONArrayPlayers());
                 break;
         }
 
@@ -186,4 +216,6 @@ public class ThreadServer implements Runnable {
     }
 
     void setCommand(String command) { this.command = command; }
+
+    void setArgument(Object argument) { this.argument = argument; }
 }

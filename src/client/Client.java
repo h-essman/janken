@@ -14,15 +14,16 @@ import java.util.Arrays;
 
 public class Client {
 
-    private String pseudo, state, command, status;
+    private Player player;
+
+    private String state, command;
     private Object argument;
-    private int id;
 
     private Frame frame;
     private JSONObject jsonServer;
 
     private byte[] passphrase;
-    private boolean secure, ready;
+    private boolean secure;
 
     public Client(Frame frame) {
         this.frame = frame;
@@ -32,11 +33,11 @@ public class Client {
 
         try {
 
-            this.pseudo = pseudo;
             this.command = "";
             this.secure = secure;
+            this.player = new Player(pseudo);
 
-            new Thread(new ThreadCient(host, port, this, this.frame)).start();
+            new Thread(new ThreadCient(host, port, this, this.frame, this.player)).start();
 
             return true;
         } catch (Exception e) {
@@ -84,7 +85,7 @@ public class Client {
 
     }
 
-    String getPseudo() { return this.pseudo; }
+
 
     public String getState() { return state; }
 
@@ -93,10 +94,6 @@ public class Client {
     String getCommand() { return command; }
 
     public void setCommand(String commande) { this.command = commande; }
-
-    int getId() { return id; }
-
-    void setId(int id) { this.id = id; }
 
     void setJsonServer(JSONObject jsonServer) { this.jsonServer = jsonServer; }
 
@@ -110,13 +107,5 @@ public class Client {
 
     boolean isSecure() { return secure; }
 
-    void goNext(String state){ this.frame.goNext(state);}
-
-    public boolean isReady() { return ready; }
-
-    void setReady(boolean ready) { this.ready = ready; }
-
-    void setStatus(String status) { this.status = status; }
-
-    public String getStatus() { return status; }
+    public Player getPlayer() { return player; }
 }

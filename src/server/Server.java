@@ -22,7 +22,7 @@ public class Server {
 
     private int nbClient = 0;
     private int lastIdClient = 0;
-    private int lastIdlobby = 0;
+    private int lastIdLobby = 0;
 
     private byte[] passphrase;
     private boolean secure;
@@ -72,8 +72,8 @@ public class Server {
     }
 
     private void giveIdLobby(Lobby lobby) {
-        this.lastIdlobby++;
-        lobby.setId(this.lastIdlobby);
+        this.lastIdLobby++;
+        lobby.setId(this.lastIdLobby);
     }
 
     void createLobby(String name, Player player) {
@@ -123,20 +123,6 @@ public class Server {
             jsonLobbies.put(jsonLobby);
         }
         return jsonLobbies;
-    }
-
-    JSONArray getLobbyPlayers(Player player){
-        JSONArray jsonPlayers = new JSONArray();
-        Lobby lobby = player.getLobby();
-        for (Player p : lobby.getPlayers()) {
-            JSONObject jsonPlayer = new JSONObject();
-            jsonPlayer.put("pseudo", p.getPseudo());
-            jsonPlayer.put("id", p.getId());
-            jsonPlayer.put("status", p.getStatus());
-            jsonPlayer.put("ready", p.isReady());
-            jsonPlayers.put(jsonPlayer);
-        }
-        return jsonPlayers;
     }
 
     void giveIdClient(Player player) {

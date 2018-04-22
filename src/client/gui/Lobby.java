@@ -69,7 +69,7 @@ public class Lobby extends Panel implements ActionListener {
     public void refresh() {
         this.nameLobby.setText(this.getClient().getJsonServer().getString("lobby"));
 
-        if(this.getClient().getStatus().equals("creator") && this.getClient().getJsonServer().getBoolean("launchable")){
+        if(this.getClient().getPlayer().getStatus().equals("creator") && this.getClient().getJsonServer().getBoolean("launchable")){
             this.btnLaunch.setVisible(true);
         }else{
             this.btnLaunch.setVisible(false);
@@ -84,7 +84,7 @@ public class Lobby extends Panel implements ActionListener {
         for (Object player : arrayPlayers) {
 
             JSONObject jsonPlayer = (JSONObject) player;
-            String message = jsonPlayer.getString("pseudo") + " " + jsonPlayer.getString("status");
+            String message = jsonPlayer.getString("pseudo") + " - " + jsonPlayer.getString("status");
 
             if (jsonPlayer.getBoolean("ready")) {
                 message += " - PRET";
@@ -105,7 +105,7 @@ public class Lobby extends Panel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 
         if(e.getSource() == this.btnReady) {
-            if(this.getClient().isReady()){
+            if(this.getClient().getPlayer().isReady()){
                 this.btnReady.setBackground(Color.red);
                 this.getClient().setCommand("ready");
                 this.getClient().setArgument("ko");
@@ -117,11 +117,12 @@ public class Lobby extends Panel implements ActionListener {
         }
 
         if(e.getSource() == this.btnQuit) {
-
+            this.btnReady.setBackground(Color.red);
+            this.getClient().setCommand("quit");
         }
 
         if(e.getSource() == this.btnLaunch) {
-
+            this.getClient().setCommand("game");
         }
 
     }

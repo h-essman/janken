@@ -35,11 +35,11 @@ public class Frame extends JFrame {
         this.getContentPane().add(panel, BorderLayout.CENTER);
         this.setVisible(true);
 
-        this.goNext("menu");
+        this.goPanel("menu");
 
     }
 
-    public void goNext(String stage) {
+    public void goPanel(String stage) {
 
         switch (stage) {
 

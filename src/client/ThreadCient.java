@@ -17,6 +17,7 @@ public class ThreadCient implements Runnable {
     private BufferedReader in;
 
     private Client client;
+    private Player player;
     private Frame frame;
 
     private JSONObject jsonClient, jsonServer;
@@ -24,10 +25,11 @@ public class ThreadCient implements Runnable {
     private String reception, emission;
     private boolean waiting = true;
 
-    ThreadCient(String host, int port, Client client, Frame frame) throws Exception {
+    ThreadCient(String host, int port, Client client, Frame frame, Player player) throws Exception {
 
         this.frame = frame;
         this.client = client;
+        this.player = player;
         this.jsonClient = new JSONObject();
         this.jsonServer = new JSONObject();
 
@@ -76,31 +78,72 @@ public class ThreadCient implements Runnable {
             }
             this.jsonServer = new JSONObject(reception);
             this.client.setJsonServer(this.jsonServer);
-            this.client.setId(this.jsonServer.getInt("id"));
+            this.player.setId(this.jsonServer.getInt("id"));
 
             //TODO gestion des réponses du serveur aux commandes
 
             switch (this.jsonServer.getString("command")){
+                case "server":
+                    this.frame.goPanel("server");
+                    break;
                 case "join":
                     if(this.jsonServer.getString("argument").equals("ok")){
-                        this.client.setStatus("opponent");
-                        this.client.goNext("lobby");
+                        this.player.setStatus("opponent");
+                        this.frame.goPanel("lobby");
                     }else{
                         this.frame.showError("Impossible de rejoindre ce lobby...");
                     }
                     break;
                 case "create":
-                    this.client.setStatus("creator");
-                    this.client.goNext("lobby");
-                    break;
-                case "server":
-                    this.frame.goNext("server");
+                    this.player.setStatus("creator");
+                    this.frame.goPanel("lobby");
                     break;
                 case "ready":
                     if(this.jsonServer.getString("argument").equals("ok")){
-                        this.client.setReady(true);
+                        this.player.setReady(true);
                     }else{
-                        this.client.setReady(false);
+                        this.player.setReady(false);
+                    }
+                    break;
+                case "game":
+                    this.frame.goPanel("game");
+                    break;
+                case "wait":
+                    this.player.setWaiting(true);
+                    break;
+                case "end":
+                    this.player.setWaiting(false);
+                    switch (this.jsonServer.getString("argument")){
+                        case "win":
+                            for(Object player:jsonServer.getJSONArray("players")){
+                                JSONObject jsonPlayer = (JSONObject) player;
+                                if(this.player.getId() == jsonPlayer.getInt("id")){
+                                    this.player.setScore(jsonPlayer.getInt("score"));
+                                    this.player.setGameResult("win");
+                                    this.frame.goPanel("result");
+                                }
+                            }
+                            break;
+                        case "loose":
+                            this.player.setGameResult("loose");
+                            this.frame.goPanel("result");
+                            break;
+                        case "equality":
+                            this.player.setGameResult("equality");
+                            this.frame.goPanel("result");
+                            break;
+                    }
+                    break;
+                case "quit":
+                    this.player.setReady(false);
+                    if(this.jsonServer.getString("argument").equals("server")){
+                        this.frame.goPanel("server");
+                    }else if(this.jsonServer.getString("argument").equals("lobby")) {
+                        this.player.setScore(0);
+                        this.player.setGameResult("none");
+                        this.frame.goPanel("lobby");
+                    }else if(this.jsonServer.getString("argument").equals("menu")){
+                        this.kill("retour au menu");
                     }
                     break;
             }
@@ -122,25 +165,28 @@ public class ThreadCient implements Runnable {
     private JSONObject formJSON() {
         JSONObject client = new JSONObject();
 
-        //TODO JSON à envoyer suivant les states
+        client.put("pseudo", this.player.getPseudo());
+        client.put("id", this.player.getId());
 
-        client.put("pseudo", this.client.getPseudo());
-        client.put("id", this.client.getId());
         client.put("state", this.client.getState());
         client.put("command", this.client.getCommand());
         client.put("argument", this.client.getArgument());
+
+        if(this.client.getState().equals("game")){
+            client.put("score", this.player.getScore());
+        }
 
         this.client.setCommand("");
         this.client.setArgument("");
         return client;
     }
 
-    private void kill(String error){
-        this.client.goNext("menu");
+    private void kill(String message){
+        this.frame.goPanel("menu");
         this.frame.showError("Vous avez été déconnecté du serveur !");
         try {
             this.socket.close();
-            System.out.println("Socket fermé : "+error);
+            System.out.println("Socket fermé : "+message);
         }catch (Exception e){
             System.out.println("Erreur fermeture socket : "+e.getMessage());
         }
