@@ -117,6 +117,7 @@ public class ThreadCient implements Runnable {
 
                 case "end":
                     this.player.setWaiting(false);
+                    this.player.setReady(false);
                     switch (this.jsonServer.getString("argument")){
 
                         case "win":

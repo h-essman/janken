@@ -136,7 +136,7 @@ public class ThreadServer implements Runnable {
                         case "choice":
                             this.player.setChoice(this.jsonClient.getInt("argument"));
                             if(this.player.getLobby().getGame().done()){
-                                this.player.getLobby().getGame().endGame(this.player.getLobby().getGame().winner());
+                                this.player.getLobby().getGame().endGame();
                             }else{
                                 this.command = "wait";
                             }
@@ -152,11 +152,18 @@ public class ThreadServer implements Runnable {
                     switch (this.jsonClient.getString("command")) {
 
                         case "continue":
-                            this.player.setReady(true);
-                            if(this.player.getLobby().getGame().ready()){
-                                this.command = "game";
-                            }else{
-                                this.command = "wait";
+                            this.player.getLobby().getGame().continueGame();
+                            break;
+
+                        case "ready":
+                            if (this.jsonClient.getString("argument").equals("ok")) {
+                                this.player.setReady(true);
+                                this.command = "ready";
+                                this.argument = "ok";
+                            } else {
+                                this.player.setReady(false);
+                                this.command = "ready";
+                                this.argument = "ko";
                             }
                             break;
 
@@ -171,7 +178,6 @@ public class ThreadServer implements Runnable {
             this.emission = this.server.isSecure() ? this.server.encrypt(this.jsonServer.toString()) : this.jsonServer.toString();
             return true;
         } catch (Exception e) {
-            //e.printStackTrace();
             return false;
         }
     }
@@ -197,6 +203,11 @@ public class ThreadServer implements Runnable {
             case "game":
                 client.put("players", this.player.getLobby().getJSONArrayPlayers());
                 break;
+
+            case "result":
+                client.put("players", this.player.getLobby().getJSONArrayPlayers());
+                client.put("launchable", this.player.getLobby().getGame().ready());
+                break;
         }
 
         client.put("command", this.command);
@@ -204,7 +215,6 @@ public class ThreadServer implements Runnable {
 
         this.command = "";
         this.argument = "";
-
 
         return client;
     }

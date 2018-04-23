@@ -50,42 +50,43 @@ public class Frame extends JFrame {
         switch (stage) {
 
             case "menu":
-                this.setTitle("Janken");
+                this.setTitle("Janken - MENU");
                 this.setSize(440, 250);
                 this.cardLayout.show(this.panel, "menu");
                 this.client.setState("menu");
                 break;
 
             case "connexion":
-                this.setTitle("Janken");
+                this.setTitle("Janken - CONNEXION");
                 this.setSize(100, 50);
                 this.cardLayout.show(this.panel, "connexion");
                 break;
 
             case "server":
-                this.setTitle("Janken");
+                this.setTitle("Janken - SERVER");
                 this.setSize(440, 350);
                 this.cardLayout.show(this.panel, "server");
                 this.client.setState("server");
                 break;
 
             case "lobby":
-                this.setTitle("Janken");
+                this.setTitle("Janken - LOBBY");
                 this.setSize(330, 170);
                 this.cardLayout.show(this.panel, "lobby");
                 this.client.setState("lobby");
                 break;
 
             case "game":
-                this.setTitle("Janken");
-                this.setSize(600, 600);
+                this.setTitle("Janken - GAME");
+                this.setSize(330, 170);
                 this.cardLayout.show(this.panel, "game");
                 this.client.setState("game");
+                this.game.setSubmitted(false);
                 break;
 
             case "result":
-                this.setTitle("Janken");
-                this.setSize(600, 600);
+                this.setTitle("Janken - RESULT");
+                this.setSize(330, 170);
                 this.cardLayout.show(this.panel, "result");
                 this.client.setState("result");
                 break;
@@ -97,19 +98,16 @@ public class Frame extends JFrame {
 
         switch (this.client.getState()) {
             case "menu":
-
                 return this.menu;
             case "server":
-
                 return this.server;
             case "lobby":
-
                 return this.lobby;
             case "game":
-
                 return this.game;
+            case "result":
+                return this.result;
         }
-
         return null;
     }
 

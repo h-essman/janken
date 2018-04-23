@@ -50,8 +50,8 @@ public class Lobby extends Panel implements ActionListener {
         this.add(btnQuit);
         this.btnQuit.addActionListener(this);
 
-        this.btnLaunch = new JButton("GO !");
-        this.btnLaunch.setBounds(220, 40, 80, 30);
+        this.btnLaunch = new JButton("GO!");
+        this.btnLaunch.setBounds(220, 40, 60, 30);
         this.add(btnLaunch);
         this.btnLaunch.addActionListener(this);
         this.btnLaunch.setVisible(false);

@@ -79,7 +79,7 @@ public class Player {
 
     int getScore() { return score; }
 
-    void incrScore() { this.score ++; }
+    void incrScore() { this.score = this.score + 1; }
 
     void setScore(int score) { this.score = score; }
 

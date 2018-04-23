@@ -14,25 +14,25 @@ class Game {
         }
 
         Player winner(){
-            if(this.players.get(1).getChoice() != this.players.get(2).getChoice()) {
-                switch (this.players.get(1).getChoice()) {
+            if(this.players.get(0).getChoice() != this.players.get(1).getChoice()) {
+                switch (this.players.get(0).getChoice()) {
                     case 1:
-                        if (this.players.get(2).getChoice() == 3) {
-                            return this.players.get(1);
+                        if (this.players.get(1).getChoice() == 3) {
+                            return this.players.get(0);
                         }else{
-                            return this.players.get(2);
+                            return this.players.get(1);
                         }
                     case 2:
-                        if (this.players.get(2).getChoice() == 1) {
-                            return this.players.get(1);
+                        if (this.players.get(1).getChoice() == 1) {
+                            return this.players.get(0);
                         }else {
-                            return this.players.get(2);
+                            return this.players.get(1);
                         }
                     case 3:
-                        if (this.players.get(2).getChoice() == 2) {
-                            return this.players.get(1);
+                        if (this.players.get(1).getChoice() == 2) {
+                            return this.players.get(0);
                         }else {
-                            return this.players.get(2);
+                            return this.players.get(1);
                         }
                 }
             }
@@ -55,17 +55,36 @@ class Game {
             this.lobby.setInGame(true);
         }
 
-        void endGame(Player winner){
+        void continueGame(){
+            for(Player player:this.players){
+            player.setCommand("game");
+            player.setChoice(0);
+            }
+        }
+
+        void endGame(){
+            Player winner = winner();
+            boolean equality = true;
             for(Player player:players) {
                 player.setReady(false);
-                player.setCommand("end");
-                if (winner.equals(null)) {
+                if (player.equals(winner)) {
+                    equality = false;
+                }
+            }
+            if(!equality){
+                for(Player player:players) {
+                    player.setCommand("end");
+                    if (player.equals(winner)) {
+                        player.incrScore();
+                        player.setArgument("win");
+                    }else{
+                        player.setArgument("loose");
+                    }
+                }
+            }else{
+                for(Player player:players) {
+                    player.setCommand("end");
                     player.setArgument("equality");
-                } else if (player.equals(winner)) {
-                    player.incrScore();
-                    player.setArgument("win");
-                } else {
-                    player.setArgument("loose");
                 }
             }
         }

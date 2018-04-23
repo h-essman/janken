@@ -3,8 +3,10 @@ package client;
 public class Player {
 
     private String pseudo, status, gameResult;
-    private boolean ready, waiting;
+    private boolean ready = false;
+    private boolean waiting = false;
     private int id, score;
+    private int choice = 0;
 
     Player(String pseudo){
         this.pseudo = pseudo;
@@ -35,4 +37,8 @@ public class Player {
     public void setGameResult(String gameResult) { this.gameResult = gameResult; }
 
     public String getGameResult() { return gameResult; }
+
+    public void setChoice(int choice) { this.choice = choice; }
+
+    public int getChoice() { return choice; }
 }
