@@ -5,8 +5,6 @@ import client.Client;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 //Panel du menu
 
@@ -14,28 +12,13 @@ public class Menu extends Panel implements ActionListener {
 
     private JButton btnConnexion, btnQuit;
     private JTextField inputHost, inputPseudo, inputPort;
-    private JLabel labelHost, labelPseudo, labelPort, labelPic;
+    private JLabel labelHost, labelPseudo, labelPort;
     private JCheckBox checkBoxSecure;
-
-    private String hostname, ipadress;
 
     Menu(Client client, Frame frame) {
         super(client, frame);
 
-        try {
-            InetAddress inetadr = InetAddress.getLocalHost();
-            this.hostname = inetadr.getHostName();
-            this.ipadress = inetadr.getHostAddress();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-
         this.setLayout(null);
-
-        /*BufferedImage myPicture = ImageIO.read(new File(".\\image.png"));
-        this.labelPic= new JLabel(new ImageIcon(myPicture.getScaledInstance(100, 100, Image.SCALE_SMOOTH)));
-        labelPic.setBounds(400,20,100,100);
-        this.add(labelPic);*/
 
         this.labelPseudo = new JLabel("Pseudo : ");
         this.labelPseudo.setBounds(20, 20, 150, 30);

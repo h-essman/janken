@@ -2,7 +2,7 @@ package server;
 
 //Class Player
 
-public class Player {
+class Player {
 
     private String pseudo, status;
     private boolean ready = false;

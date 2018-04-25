@@ -15,7 +15,7 @@ On y trouve notamment la gestion des commandes du client,
 la formation du JSON
  */
 
-public class ThreadServer implements Runnable {
+class ThreadServer implements Runnable {
 
     private Socket socket;
     private PrintWriter out;

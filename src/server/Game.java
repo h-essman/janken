@@ -16,7 +16,7 @@ class Game {
         }
 
         //Fonction permettant de déterminer le gagnant
-        Player winner(){
+        private Player winner(){
             if(this.players.get(0).getChoice() != this.players.get(1).getChoice()) {
                 switch (this.players.get(0).getChoice()) {
                     case 1:
