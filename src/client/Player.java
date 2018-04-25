@@ -1,5 +1,7 @@
 package client;
 
+//Class player avec les variables principales du Joueur
+
 public class Player {
 
     private String pseudo, status, gameResult;

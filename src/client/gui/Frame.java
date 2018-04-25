@@ -17,6 +17,8 @@ public class Frame extends JFrame {
     private Game game;
     private Result result;
 
+    //Constructeur de la Frame avec ajout des différents panels dans un cardLayout afin de pouvoir switcher efficacement
+
     public Frame() {
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -45,6 +47,7 @@ public class Frame extends JFrame {
 
     }
 
+    //Fonction pour changer de panel
     public void goPanel(String stage) {
 
         switch (stage) {
@@ -94,6 +97,7 @@ public class Frame extends JFrame {
         }
     }
 
+    //Fonction afin de retourner le panel actuellement affiché
     public Panel getPanel() {
 
         switch (this.client.getState()) {
@@ -111,6 +115,7 @@ public class Frame extends JFrame {
         return null;
     }
 
+    //Fonction pour afficher un message d'erreur
     public void showError(String message) {
         JOptionPane.showMessageDialog(this,
                 message,

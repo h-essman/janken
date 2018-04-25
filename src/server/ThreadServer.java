@@ -10,6 +10,11 @@ import java.net.Socket;
 
 import static java.lang.Thread.sleep;
 
+/*Class ThreadServer qui gère la communication avec le Thread du client
+On y trouve notamment la gestion des commandes du client,
+la formation du JSON
+ */
+
 public class ThreadServer implements Runnable {
 
     private Socket socket;
@@ -48,15 +53,18 @@ public class ThreadServer implements Runnable {
 
     }
 
+    /*Fonction RUN car c'est un Thread
+    Elle gère la communication avec le thread du client
+     */
     public void run() {
         while (true) {
             try {
                 sleep(300);
                 if (!this.waiting) {
                     int compteur = 0;
-                    while (!this.execution(this.reception)) {
+                    while (!this.execution(this.reception)) {//Si l'éxecution échoue cela signifie que le serveur ne comprend le JSON du client et donc qu'il y un mauvais mot de passe ou une incoherence du JSON
                         sleep(500);
-                        if(compteur == 2){
+                        if(compteur == 2){//Si l'éxecution échoue plus de 2 fois alors on vire le client
                             System.out.println("Kick !!!");
                             throw new java.lang.Exception("kicked");
                         }
@@ -70,21 +78,23 @@ public class ThreadServer implements Runnable {
                     this.waiting = false;
                 }
             } catch (Exception e) {
-                this.kill(e.getMessage());
+                this.kill(e.getMessage());//Si on a une erreur une kill proprement
                 break;
             }
             //System.out.println(this.reception + "\n" + this.jsonServer.toString());
         }
     }
 
+    //Fonction d'execution du JSON du client
     private boolean execution(String reception) {
         try {
-            if (this.server.isSecure()) {
+            if (this.server.isSecure()) {//On déchiffre si la connexion est sécurisée
                 reception = this.server.decrypt(reception);
             }
             this.jsonClient = new JSONObject(reception);
             this.player.setPseudo(this.jsonClient.getString("pseudo"));
 
+            //Suivant le panel (l'état) du client on execute les commandes
             switch (this.jsonClient.getString("state")){
 
                 case "server":
@@ -123,7 +133,7 @@ public class ThreadServer implements Runnable {
 
                         case "quit":
                             this.player.setReady(false);
-                            this.player.quitLobby();
+                            this.player.quit();
                             this.command = "quit";
                             this.argument = "server";
                             break;
@@ -174,20 +184,22 @@ public class ThreadServer implements Runnable {
                     }
                     break;
             }
-            this.jsonServer = this.formJSON();
-            this.emission = this.server.isSecure() ? this.server.encrypt(this.jsonServer.toString()) : this.jsonServer.toString();
-            return true;
+            this.jsonServer = this.formJSON();// On forme le JSON du serveur
+            this.emission = this.server.isSecure() ? this.server.encrypt(this.jsonServer.toString()) : this.jsonServer.toString();//On l'envoie chiffré si la connexion est sécurisée
+            return true;//On retourne true si l'execution s'est bien passée
         } catch (Exception e) {
             return false;
         }
     }
 
+    //Fonction de formation du JSON serveur
     private JSONObject formJSON() {
         JSONObject client = new JSONObject();
         client.put("server", this.server.getName());
         client.put("clients", this.server.getClient());
         client.put("id", this.player.getId());
 
+        //On envoie un les infos nécessaires au client suivant son état
         switch (this.jsonClient.getString("state")){
 
             case "server":
@@ -219,10 +231,11 @@ public class ThreadServer implements Runnable {
         return client;
     }
 
+    //Fonction permettant de quitter proprement
     private void kill(String error){
         System.out.println("Arrêt d'un thread : "+error);
         this.server.removeClient(player);
-        this.player.quitLobby();
+        this.player.quit();
         try {
             this.socket.close();
             System.out.println("Socket fermé");

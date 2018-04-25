@@ -8,6 +8,8 @@ import java.awt.event.ActionListener;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+//Panel du menu
+
 public class Menu extends Panel implements ActionListener {
 
     private JButton btnConnexion, btnQuit;
@@ -18,7 +20,6 @@ public class Menu extends Panel implements ActionListener {
     private String hostname, ipadress;
 
     Menu(Client client, Frame frame) {
-
         super(client, frame);
 
         try {
@@ -106,7 +107,7 @@ public class Menu extends Panel implements ActionListener {
 
                 if (!this.getClient().connexion(inputHost.getText(), Integer.parseInt(inputPort.getText()), inputPseudo.getText(), this.checkBoxSecure.isSelected())){
                    this.getFrame().showError("Erreur de connexion...");
-                   //this.resetField();
+                   this.resetField();
                 }
             }
         }

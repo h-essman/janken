@@ -9,6 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+//Panel de l'écran du serveur avec l'affichage de tous les lobbies
+
 public class Server extends Panel implements ActionListener {
 
     private DefaultListModel listLobbiesModel;

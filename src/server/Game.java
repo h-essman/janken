@@ -2,6 +2,8 @@ package server;
 
 import java.util.ArrayList;
 
+//Class Game pour la gestion logique du jeu Pierre Feuille Ciseaux
+
 class Game {
 
         private ArrayList<Player> players;
@@ -13,6 +15,7 @@ class Game {
             launchGame();
         }
 
+        //Fonction permettant de déterminer le gagnant
         Player winner(){
             if(this.players.get(0).getChoice() != this.players.get(1).getChoice()) {
                 switch (this.players.get(0).getChoice()) {
@@ -39,6 +42,7 @@ class Game {
             return null;
         }
 
+        //Fonction permettant de déterminer si tous les joueurs ont joué
         boolean done(){
             for(Player player:players){
                 if(player.getChoice() == 0){
@@ -48,6 +52,7 @@ class Game {
             return true;
         }
 
+        //Fonction permettant le lancement d'une nouvelle partie
         private void launchGame(){
             for(Player player:this.players){
                 player.setCommand("game");
@@ -55,6 +60,7 @@ class Game {
             this.lobby.setInGame(true);
         }
 
+        //Fonction permettant la continuation d'une partie existante
         void continueGame(){
             for(Player player:this.players){
             player.setCommand("game");
@@ -62,6 +68,7 @@ class Game {
             }
         }
 
+        //Fonction de fin de partie avec envoie des commandes adequates suivant le résultat
         void endGame(){
             Player winner = winner();
             boolean equality = true;
@@ -89,6 +96,7 @@ class Game {
             }
         }
 
+        //Fonction pour quitter le jeu de manière propre
         void quitGame(){
             for(Player player:players) {
                 player.setChoice(0);
@@ -100,6 +108,7 @@ class Game {
             this.lobby.setInGame(false);
         }
 
+        //Fonction pour déterminer si tous les joueurs sont prêts pour continuer la partie
         boolean ready(){
             for (Player player:players){
                 if(!player.isReady()){

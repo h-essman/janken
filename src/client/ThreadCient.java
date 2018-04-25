@@ -10,6 +10,12 @@ import java.net.Socket;
 
 import static java.lang.Thread.sleep;
 
+/*Class ThreadClient qui gère la communication avec le Thread du serveur
+On y trouve notamment la gestion des réponses du serveur,
+la formation du JSON,
+la gestion de la synchronisation pour le rafraichissement des infos affichées sur le panel en cours.
+ */
+
 public class ThreadCient implements Runnable {
 
     private Socket socket;
@@ -42,15 +48,19 @@ public class ThreadCient implements Runnable {
 
     }
 
+    /*Fonction RUN car c'est un Thread
+    Elle gère la communication avec le thread du serveur
+    Le client parle en envoyant un JSON, attend la reponse du serveur, execute les ordres du serveur, repond au serveur...
+     */
     public void run() {
         while (true) {
             try {
                 sleep(200);
                 if (!this.waiting) {
                     int compteur = 0;
-                    while (!this.execution(this.reception)) {
+                    while (!this.execution(this.reception)) {//Si l'éxecution échoue cela signifie que le client ne comprend le JSON du serveur et donc qu'il y un mauvais mot de passe ou une incoherence du JSON
                         sleep(500);
-                        if(compteur == 2){
+                        if(compteur == 2){//Si l'éxecution échoue plus de 2 fois alors on se déconnecte
                             System.out.println("Deconnexion !");
                             throw new java.lang.Exception("disconnected");
                         }
@@ -64,22 +74,24 @@ public class ThreadCient implements Runnable {
                     this.waiting = false;
                 }
             } catch (Exception e) {
-                this.kill(e.getMessage());
+                this.kill(e.getMessage());//Si on a une erreur une kill proprement
                 break;
             }
             //System.out.println(this.reception + "\n" + this.jsonClient.toString());
         }
     }
 
+    //Fonction d'execution du JSON du serveur
     private boolean execution(String reception) {
         try {
-            if (this.client.isSecure()) {
+            if (this.client.isSecure()) {//On déchiffre si la connexion est sécurisée
                 reception = this.client.decrypt(reception);
             }
             this.jsonServer = new JSONObject(reception);
             this.client.setJsonServer(this.jsonServer);
             this.player.setId(this.jsonServer.getInt("id"));
 
+            //Suivant la commande du serveur on execute des actions
             switch (this.jsonServer.getString("command")){
                 case "server":
                     this.frame.goPanel("server");
@@ -164,22 +176,27 @@ public class ThreadCient implements Runnable {
                     break;
             }
 
-            this.jsonClient = formJSON();
-            this.emission = this.client.isSecure() ? this.client.encrypt(this.jsonClient.toString()) : this.jsonClient.toString();
+            this.jsonClient = formJSON();// On forme le JSON du client
+            this.emission = this.client.isSecure() ? this.client.encrypt(this.jsonClient.toString()) : this.jsonClient.toString();//On l'envoie chiffré si la connexion est sécurisée
 
+            /* Gestion des incohérences entre le panel et le JSON
+            Dans une logique de synchronisation il est possible que le panel attende des données pas encore reçu
+            il faut alors attendre le prochain JSON
+             */
             try {
                 this.frame.getPanel().refresh();
             }catch (Exception e){
                 System.out.println("Attente de la synchronisation : "+e.getMessage());
             }
 
-            return true;
+            return true;//On retourne true si l'execution s'est bien passée
         } catch (Exception e) {
             System.out.println("Problème execution : "+e.getMessage());
             return false;
         }
     }
 
+    //Fonction de formation du JSON client
     private JSONObject formJSON() {
         JSONObject client = new JSONObject();
         client.put("pseudo", this.player.getPseudo());
@@ -195,6 +212,7 @@ public class ThreadCient implements Runnable {
         return client;
     }
 
+    //Fonction permettant de quitter proprement
     private void kill(String message){
         this.frame.goPanel("menu");
         this.frame.showError("Vous avez été déconnecté du serveur !");

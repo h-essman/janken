@@ -1,5 +1,7 @@
 package server;
 
+//Class Player
+
 public class Player {
 
     private String pseudo, status;
@@ -20,7 +22,8 @@ public class Player {
         lobby.getPlayers().add(this);
     }
 
-    void quitLobby(){
+    //Fonction qui permet au joueur de quitter proprement
+    void quit(){
 
         if(!this.status.equals("new")) {
             this.lobby.getPlayers().remove(this);
@@ -63,9 +66,7 @@ public class Player {
         return getPseudo();
     }
 
-    Lobby getLobby() {
-        return lobby;
-    }
+    Lobby getLobby() { return lobby; }
 
     boolean isReady() { return ready; }
 

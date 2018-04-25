@@ -9,6 +9,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+//Panel pour le résultat du jeu
+
 public class Result extends Panel implements ActionListener {
 
     private DefaultListModel listPlayersModel;

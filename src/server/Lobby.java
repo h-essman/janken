@@ -5,6 +5,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+//Class Lobby
+
 class Lobby {
 
     private String name;
@@ -23,6 +25,7 @@ class Lobby {
         this.server = server;
     }
 
+    //Fonction permettant de déterminer si les joueurs sont prêts à lancer le jeu
     boolean isLaunchable() {
         for(Player player:players){
             if(!player.isReady()){
@@ -32,6 +35,7 @@ class Lobby {
         return isFull();
     }
 
+    //Fonction permettant de fermer proprement le lobby
     void kill(){
         for(Player player:players){
             player.goServer();
@@ -39,11 +43,13 @@ class Lobby {
         this.server.removeLobby(this);
     }
 
+    //Fonction permettant de fermer proprement le lobby
     void newGame() {
         this.game = new Game(this);
         this.inGame = true;
     }
 
+    //Fonction recupérer les infos sur les joueurs du lobby au format JSONArray afin de l'intégrer dans le JSON à envoyer au client
     JSONArray getJSONArrayPlayers(){
         JSONArray jsonPlayers = new JSONArray();
         for (Player p : players) {

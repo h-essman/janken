@@ -10,6 +10,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+//Panel des lobbies
+
 public class Lobby extends Panel implements ActionListener {
 
     private DefaultListModel listPlayersModel;
@@ -33,7 +35,7 @@ public class Lobby extends Panel implements ActionListener {
         this.nameLobby.setBounds(30, 10, 150, 20);
         this.add(this.nameLobby);
 
-        /* TODO quand les lobby auront des mots de passe
+        /* TODO à ajouter quand les lobby auront des mots de passe
         this.privateLobby = new JLabel("PRIVE");
         this.privateLobby.setBounds(200, 10, 50, 20);
         this.add(this.privateLobby);

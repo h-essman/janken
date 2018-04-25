@@ -4,6 +4,8 @@ import client.Client;
 
 import javax.swing.*;
 
+//Class abstraite pour définir les panels
+
 public abstract class Panel extends JPanel {
 
     private Client client;
@@ -14,6 +16,7 @@ public abstract class Panel extends JPanel {
         this.frame = frame;
     }
 
+    //Fonction refresh qui sera appelé par le ThreadClient afin d'actualiser les informations affichées
     public abstract void refresh();
 
     public Client getClient() {

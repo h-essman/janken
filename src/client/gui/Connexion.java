@@ -3,6 +3,8 @@ import client.Client;
 
 import javax.swing.*;
 
+//Panel d'attente de connexion
+
 public class Connexion extends Panel{
 
     Connexion (Client client, Frame frame) {

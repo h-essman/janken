@@ -11,6 +11,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
+//Class client avec les méthodes et variables principales
 
 public class Client {
 
@@ -29,6 +30,7 @@ public class Client {
         this.frame = frame;
     }
 
+    //Fonction de connexion au serveur
     public boolean connexion(String host, int port, String pseudo, boolean secure) {
 
         try {
@@ -45,18 +47,24 @@ public class Client {
         }
     }
 
+    //Fonction de chiffrement en AES 16Bytes
     String encrypt(String str) throws Exception {
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(this.passphrase, "AES"));
         return Base64.encodeBase64URLSafeString(cipher.doFinal(str.getBytes(Charsets.UTF_8)));
     }
 
+    //Fonction de déchiffrement AES 16Bytes
     String decrypt(String encryptedInput) throws Exception {
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(this.passphrase, "AES"));
         return new String(cipher.doFinal(Base64.decodeBase64(encryptedInput)), Charsets.UTF_8);
     }
 
+    /*Fonction de condensat du mot de passe entrer par l'utilisateur.
+      Double interet : - crypter le mot de passe entré
+                       - obtenir une passphrase de 16Bytes pour le chiffrement en AES 16Bytes quelque soit la taille du mot de passe entré.
+     */
     private byte[] sha256digest16(String clearpassphrase) throws NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         digest.reset();
